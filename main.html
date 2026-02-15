@@ -1,0 +1,3129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speedy Auto Tint — Window Tinting, Vehicle Wrapping &amp; Car Audio</title>
+    <!-- Privacy: No analytics, no trackers, no third-party data sharing -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* ══════════════════════════════════════════
+           DESIGN TOKENS
+        ══════════════════════════════════════════ */
+        :root {
+            --cyan:      #01D5DA;
+            --cyan-60:   rgba(1, 213, 218, 0.6);
+            --cyan-30:   rgba(1, 213, 218, 0.3);
+            --cyan-10:   rgba(1, 213, 218, 0.1);
+            --cyan-05:   rgba(1, 213, 218, 0.05);
+            --red:       #e05555;
+            --red-30:    rgba(224, 85, 85, 0.3);
+            --amber:     #f0ad4e;
+            --green:     #4ecf8c;
+            --bg:        #000;
+            --bg-card:   rgba(0, 0, 0, 0.85);
+            --text-muted: rgba(1, 213, 218, 0.65);
+            --border:    1px solid rgba(1, 213, 218, 0.35);
+            --font-display: 'Orbitron', monospace;
+            --font-body:    'Rajdhani', monospace;
+            --radius: 0px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --gold:      #C9A84C;
+            --gold-30:   rgba(201, 168, 76, 0.3);
+            --gold-10:   rgba(201, 168, 76, 0.1);
+            --gold-05:   rgba(201, 168, 76, 0.05);
+        }
+
+        /* ══════════════════════════════════════════
+           RESET & BASE
+        ══════════════════════════════════════════ */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--font-body);
+            font-size: 16px;
+            line-height: 1.7;
+            color: var(--cyan);
+            background: var(--bg);
+            overflow-x: hidden;
+        }
+
+        /* ── Grid overlay ── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(0deg, transparent 0px, rgba(1,213,218,0.04) 1px, transparent 2px),
+                linear-gradient(90deg, transparent 0px, rgba(1,213,218,0.04) 1px, transparent 2px);
+            background-size: 60px 60px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ── Scanline ── */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+            animation: scan 10s linear infinite;
+            pointer-events: none;
+            z-index: 999;
+            opacity: 0.4;
+        }
+
+        @keyframes scan {
+            0%   { transform: translateY(0); }
+            100% { transform: translateY(100vh); }
+        }
+
+        /* ══════════════════════════════════════════
+           TYPOGRAPHY
+        ══════════════════════════════════════════ */
+        h1, h2, h3, h4 {
+            font-family: var(--font-display);
+            letter-spacing: 0.05em;
+            line-height: 1.2;
+        }
+
+        .section-label {
+            font-family: var(--font-display);
+            font-size: 0.65rem;
+            letter-spacing: 0.4em;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: clamp(1.5rem, 3vw, 2.2rem);
+            font-weight: 700;
+            color: var(--cyan);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            text-shadow: 0 0 20px var(--cyan-30);
+        }
+
+        a { color: var(--cyan); text-decoration: none; }
+        a:hover { text-shadow: 0 0 8px var(--cyan); }
+
+        /* ══════════════════════════════════════════
+           LAYOUT
+        ══════════════════════════════════════════ */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 clamp(16px, 4vw, 40px);
+            position: relative;
+            z-index: 2;
+        }
+
+        section { position: relative; }
+
+        /* Divider line */
+        .section-divider {
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--cyan-30), transparent);
+            box-shadow: 0 0 4px var(--cyan-30);
+        }
+
+        /* ══════════════════════════════════════════
+           HEADER / NAV
+        ══════════════════════════════════════════ */
+        header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 500;
+            background: rgba(0, 0, 0, 0.92);
+            border-bottom: 1px solid rgba(1,213,218,0.25);
+            box-shadow: 0 0 30px rgba(1,213,218,0.1), 0 4px 20px rgba(0,0,0,0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: var(--transition);
+        }
+
+        header.scrolled {
+            border-bottom-color: rgba(1,213,218,0.4);
+            box-shadow: 0 0 40px rgba(1,213,218,0.15), 0 4px 30px rgba(0,0,0,0.9);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            text-decoration: none;
+        }
+
+        .logo img {
+            height: 42px;
+            width: auto;
+            filter: drop-shadow(0 0 8px var(--cyan-60));
+        }
+
+        .logo-wordmark {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--cyan);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            text-shadow: 0 0 12px var(--cyan-30);
+            line-height: 1.2;
+        }
+
+        .logo-sub {
+            display: block;
+            font-size: 0.5rem;
+            letter-spacing: 0.35em;
+            opacity: 0.6;
+            font-weight: 400;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            font-family: var(--font-display);
+            font-size: 0.65rem;
+            font-weight: 500;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            transition: var(--transition);
+            position: relative;
+            padding-bottom: 2px;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px; left: 0;
+            width: 0; height: 1px;
+            background: var(--cyan);
+            box-shadow: 0 0 6px var(--cyan);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--cyan);
+            text-shadow: 0 0 8px var(--cyan);
+        }
+
+        .nav-links a:hover::after { width: 100%; }
+
+        .nav-cta {
+            font-family: var(--font-display);
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--bg) !important;
+            background: var(--cyan);
+            padding: 9px 20px;
+            clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+            transition: var(--transition);
+            text-shadow: none !important;
+        }
+
+        .nav-cta::after { display: none !important; }
+
+        .nav-cta:hover {
+            background: #fff;
+            box-shadow: 0 0 20px var(--cyan);
+        }
+
+        /* Mobile menu */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            gap: 5px;
+            width: 36px;
+            height: 36px;
+            cursor: pointer;
+            border: 1px solid var(--cyan-30);
+            padding: 8px;
+            background: none;
+            transition: var(--transition);
+        }
+
+        .hamburger:hover { border-color: var(--cyan); box-shadow: 0 0 10px var(--cyan-30); }
+
+        .hamburger span {
+            display: block;
+            width: 100%;
+            height: 1px;
+            background: var(--cyan);
+            box-shadow: 0 0 4px var(--cyan);
+            transition: var(--transition);
+        }
+
+        .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(4px, 4px); }
+        .hamburger.open span:nth-child(2) { opacity: 0; }
+        .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(4px, -4px); }
+
+        .mobile-menu {
+            display: none;
+            position: absolute;
+            top: 100%; left: 0; right: 0;
+            background: rgba(0, 0, 0, 0.97);
+            border-top: 1px solid var(--cyan-30);
+            border-bottom: 1px solid var(--cyan-30);
+            backdrop-filter: blur(12px);
+            padding: 1.5rem 0;
+        }
+
+        .mobile-menu.open { display: block; }
+
+        .mobile-menu ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .mobile-menu ul li a {
+            display: block;
+            padding: 0.85rem clamp(16px, 4vw, 40px);
+            font-family: var(--font-display);
+            font-size: 0.75rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            border-left: 2px solid transparent;
+            transition: var(--transition);
+        }
+
+        .mobile-menu ul li a:hover {
+            color: var(--cyan);
+            border-left-color: var(--cyan);
+            background: var(--cyan-05);
+            text-shadow: 0 0 8px var(--cyan);
+        }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hamburger { display: flex; }
+        }
+
+        /* ══════════════════════════════════════════
+           HERO
+        ══════════════════════════════════════════ */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 120px 0 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* ── Hero background video ── */
+        .hero-video {
+            position: absolute;
+            inset: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            object-position: center;
+            opacity: 0.45;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Darken + cyan-tint overlay over video */
+        .hero-video-overlay {
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(135deg, rgba(0,0,0,0.55) 0%, rgba(0,5,8,0.38) 100%),
+                linear-gradient(to top, rgba(1,213,218,0.06) 0%, transparent 60%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Bump all existing hero children above the video */
+        .hero-grid   { z-index: 2; }
+        .hero-glow   { z-index: 2; }
+        .hero-content { z-index: 3; }
+
+        /* Perspective grid floor */
+        .hero-grid {
+            position: absolute;
+            bottom: 0; left: -50%;
+            width: 200%;
+            height: 45%;
+            background-image:
+                linear-gradient(0deg, transparent 0px, rgba(1,213,218,0.14) 1px, transparent 2px),
+                linear-gradient(90deg, transparent 0px, rgba(1,213,218,0.14) 1px, transparent 2px);
+            background-size: 80px 80px;
+            transform: perspective(350px) rotateX(70deg);
+            transform-origin: bottom center;
+            pointer-events: none;
+            animation: gridScroll 4s linear infinite;
+        }
+
+        @keyframes gridScroll {
+            from { background-position: 0px 0px; }
+            to   { background-position: 0px 80px; }
+        }
+
+        /* Radial glow */
+        .hero-glow {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(1,213,218,0.07) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 720px;
+        }
+
+        .hero-eyebrow {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            animation: slideUp 0.8s ease-out 0.3s forwards;
+        }
+
+        .hero-eyebrow-line {
+            width: 40px; height: 1px;
+            background: var(--cyan);
+            box-shadow: 0 0 6px var(--cyan);
+        }
+
+        .hero-eyebrow-text {
+            font-family: var(--font-display);
+            font-size: 0.6rem;
+            letter-spacing: 0.4em;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.2rem, 6vw, 4.5rem);
+            font-weight: 900;
+            color: var(--cyan);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            line-height: 1.05;
+            text-shadow: 0 0 40px var(--cyan-30);
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            animation: slideUp 0.8s ease-out 0.5s forwards;
+        }
+
+        .hero h1 span {
+            display: block;
+            font-weight: 300;
+            font-size: 0.45em;
+            letter-spacing: 0.3em;
+            color: var(--text-muted);
+            margin-bottom: 0.3rem;
+        }
+
+        .hero-desc {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 500px;
+            margin-bottom: 2.5rem;
+            opacity: 0;
+            animation: slideUp 0.8s ease-out 0.7s forwards;
+            font-weight: 400;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            opacity: 0;
+            animation: slideUp 0.8s ease-out 0.9s forwards;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ══════════════════════════════════════════
+           BUTTONS
+        ══════════════════════════════════════════ */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-display);
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            padding: 14px 32px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            text-decoration: none;
+            clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+        }
+
+        .btn-primary {
+            background: var(--cyan);
+            color: #000;
+            box-shadow: 0 0 20px rgba(1,213,218,0.3);
+        }
+
+        .btn-primary:hover {
+            background: #fff;
+            box-shadow: 0 0 40px rgba(1,213,218,0.6);
+            color: #000;
+            text-shadow: none;
+            transform: translateY(-2px);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--cyan);
+            border: 1px solid var(--cyan-60);
+            box-shadow: 0 0 12px rgba(1,213,218,0.1), inset 0 0 12px rgba(1,213,218,0.03);
+        }
+
+        .btn-ghost:hover {
+            background: var(--cyan-10);
+            border-color: var(--cyan);
+            box-shadow: 0 0 25px rgba(1,213,218,0.3);
+            color: var(--cyan);
+            text-shadow: 0 0 8px var(--cyan);
+            transform: translateY(-2px);
+        }
+
+        /* ══════════════════════════════════════════
+           STATS BAR
+        ══════════════════════════════════════════ */
+        .stats-bar {
+            padding: 32px 0;
+            background: var(--cyan-05);
+            border-top: 1px solid var(--cyan-30);
+            border-bottom: 1px solid var(--cyan-30);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 2px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem 1.5rem;
+            border-right: 1px solid var(--cyan-10);
+        }
+
+        .stat-item:last-child { border-right: none; }
+
+        .stat-number {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--cyan);
+            text-shadow: 0 0 15px var(--cyan-30);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        /* ══════════════════════════════════════════
+           SERVICES
+        ══════════════════════════════════════════ */
+        .services {
+            padding: 100px 0;
+        }
+
+        .section-header {
+            margin-bottom: 3.5rem;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1px;
+            background: var(--cyan-10);
+            border: 1px solid var(--cyan-10);
+        }
+
+        .service-card {
+            background: var(--bg);
+            padding: 2.5rem;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 2px; height: 0;
+            background: var(--cyan);
+            box-shadow: 0 0 8px var(--cyan);
+            transition: height 0.4s ease;
+        }
+
+        .service-card:hover::before { height: 100%; }
+
+        .service-card:hover {
+            background: var(--cyan-05);
+        }
+
+        .service-num {
+            font-family: var(--font-display);
+            font-size: 0.6rem;
+            letter-spacing: 0.4em;
+            color: var(--cyan-30);
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+
+        .service-icon-wrap {
+            width: 56px; height: 56px;
+            border: 1px solid var(--cyan-30);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .service-card:hover .service-icon-wrap {
+            border-color: var(--cyan);
+            box-shadow: 0 0 15px var(--cyan-30);
+        }
+
+        .service-icon-wrap svg {
+            width: 26px; height: 26px;
+            fill: none;
+            stroke: var(--cyan);
+            stroke-width: 1.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            filter: drop-shadow(0 0 4px var(--cyan));
+        }
+
+        .service-card h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--cyan);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.75rem;
+        }
+
+        .service-card p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.65;
+        }
+
+        /* ══════════════════════════════════════════
+           PORTFOLIO
+        ══════════════════════════════════════════ */
+        .portfolio {
+            padding: 100px 0;
+            background: rgba(1,213,218,0.02);
+        }
+
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1px;
+            background: var(--cyan-10);
+            margin-top: 3rem;
+            border: 1px solid var(--cyan-10);
+        }
+
+        .portfolio-item {
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 4/3;
+            background: #0a0a0a;
+        }
+
+        .portfolio-item img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            filter: brightness(0.6) saturate(0.7);
+            transition: transform 0.6s ease, filter 0.4s ease;
+        }
+
+        .portfolio-item:hover img {
+            transform: scale(1.08);
+            filter: brightness(0.4) saturate(0.5);
+        }
+
+        .portfolio-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 2rem;
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 60%);
+            opacity: 1;
+            transition: var(--transition);
+        }
+
+        .portfolio-item:hover .portfolio-overlay {
+            background: linear-gradient(to top, rgba(1,213,218,0.15) 0%, rgba(0,0,0,0.7) 100%);
+        }
+
+        .portfolio-tag {
+            font-family: var(--font-display);
+            font-size: 0.55rem;
+            letter-spacing: 0.35em;
+            color: var(--cyan);
+            text-transform: uppercase;
+            margin-bottom: 0.4rem;
+            opacity: 0.8;
+        }
+
+        .portfolio-overlay h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.3rem;
+        }
+
+        .portfolio-overlay p {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.6);
+            max-width: 260px;
+        }
+
+        /* ══════════════════════════════════════════
+           ABOUT
+        ══════════════════════════════════════════ */
+        .about {
+            padding: 100px 0;
+        }
+
+        .about-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5rem;
+            align-items: center;
+        }
+
+        @media (max-width: 900px) {
+            .about-layout { grid-template-columns: 1fr; gap: 3rem; }
+        }
+
+        .about-text h2 {
+            font-size: clamp(1.5rem, 3vw, 2.2rem);
+            color: var(--cyan);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            text-shadow: 0 0 20px var(--cyan-30);
+            margin: 0.5rem 0 1.5rem;
+        }
+
+        .about-text p {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-bottom: 1.2rem;
+            line-height: 1.8;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin-top: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .feature-list li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+
+        .feature-list li::before {
+            content: '';
+            width: 6px; height: 6px;
+            background: var(--cyan);
+            box-shadow: 0 0 6px var(--cyan);
+            flex-shrink: 0;
+            clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+        }
+
+        .about-visual {
+            position: relative;
+        }
+
+        .about-visual img {
+            width: 100%;
+            height: auto;
+            border: 1px solid var(--cyan-30);
+            filter: drop-shadow(0 0 20px var(--cyan-10));
+        }
+
+        .about-visual-frame {
+            position: absolute;
+            inset: -8px;
+            border: 1px solid var(--cyan-10);
+            pointer-events: none;
+        }
+
+        /* ══════════════════════════════════════════
+           QUOTE FORM
+        ══════════════════════════════════════════ */
+        .quote-section {
+            padding: 100px 0;
+            background: rgba(1,213,218,0.02);
+            position: relative;
+        }
+
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-card {
+            background: rgba(0,0,0,0.9);
+            border: 1px solid var(--cyan-30);
+            padding: clamp(24px, 5vw, 50px);
+            box-shadow: 0 0 60px rgba(1,213,218,0.08), inset 0 0 40px rgba(1,213,218,0.02);
+            margin-top: 3rem;
+            position: relative;
+        }
+
+        /* Corner decorators on form */
+        .form-card::before, .form-card::after {
+            content: '';
+            position: absolute;
+            width: 16px; height: 16px;
+        }
+
+        .form-card::before {
+            top: -1px; left: -1px;
+            border-top: 2px solid var(--cyan);
+            border-left: 2px solid var(--cyan);
+        }
+
+        .form-card::after {
+            bottom: -1px; right: -1px;
+            border-bottom: 2px solid var(--cyan);
+            border-right: 2px solid var(--cyan);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+        }
+
+        @media (max-width: 600px) {
+            .form-grid { grid-template-columns: 1fr; }
+        }
+
+        .form-grid .full { grid-column: 1 / -1; }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .field label {
+            font-family: var(--font-display);
+            font-size: 0.6rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .field input,
+        .field select,
+        .field textarea {
+            background: rgba(0,0,0,0.8);
+            border: 1px solid var(--cyan-30);
+            color: var(--cyan);
+            font-family: var(--font-body);
+            font-size: 1rem;
+            padding: 12px 14px;
+            width: 100%;
+            transition: var(--transition);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .field input::placeholder { color: rgba(1,213,218,0.25); }
+
+        .field input:focus,
+        .field select:focus,
+        .field textarea:focus {
+            border-color: var(--cyan);
+            box-shadow: 0 0 15px rgba(1,213,218,0.15), inset 0 0 10px rgba(1,213,218,0.04);
+        }
+
+        .field select {
+            cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2301D5DA' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 38px;
+        }
+
+        .field select option {
+            background: #000;
+            color: var(--cyan);
+        }
+
+        .field textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Extras / Add-ons */
+        .extras-toggle-btn {
+            width: 100%;
+            padding: 14px 20px;
+            background: transparent;
+            border: 1px solid var(--cyan-30);
+            color: var(--text-muted);
+            font-family: var(--font-display);
+            font-size: 0.65rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .extras-toggle-btn:hover {
+            border-color: var(--cyan);
+            color: var(--cyan);
+            background: var(--cyan-05);
+            box-shadow: 0 0 15px var(--cyan-10);
+        }
+
+        .extras-toggle-btn .toggle-icon {
+            width: 16px; height: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 3px;
+            transition: var(--transition);
+        }
+
+        .extras-toggle-btn .toggle-icon span {
+            display: block;
+            background: currentColor;
+            width: 12px; height: 1px;
+            transition: var(--transition);
+        }
+
+        .extras-toggle-btn.open .toggle-icon span:last-child {
+            transform: rotate(90deg) translateX(-2px);
+        }
+
+        .extras-grid {
+            display: none;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .extras-grid.visible { display: grid; }
+
+        .addon-card {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .addon-card input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .addon-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 16px 10px;
+            border: 1px solid var(--cyan-10);
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: rgba(0,0,0,0.6);
+            font-family: var(--font-display);
+            font-size: 0.6rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            min-height: 70px;
+        }
+
+        .addon-label:hover {
+            border-color: var(--cyan-60);
+            background: var(--cyan-05);
+            color: var(--cyan);
+        }
+
+        .addon-card input:checked + .addon-label {
+            border-color: var(--cyan);
+            background: var(--cyan-10);
+            color: var(--cyan);
+            box-shadow: 0 0 12px rgba(1,213,218,0.2), inset 0 0 10px rgba(1,213,218,0.05);
+        }
+
+        .addon-check {
+            width: 12px; height: 12px;
+            border: 1px solid currentColor;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .addon-card input:checked + .addon-label .addon-check::before {
+            content: '';
+            width: 6px; height: 6px;
+            background: var(--cyan);
+            box-shadow: 0 0 4px var(--cyan);
+        }
+
+        /* Form notice */
+        .form-notice {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 14px;
+            background: var(--cyan-05);
+            border-left: 2px solid var(--cyan-30);
+            margin-top: 1.5rem;
+        }
+
+        .form-notice p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .form-notice strong { color: var(--cyan); }
+
+        /* Submit row */
+        .form-submit-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+
+        .form-privacy-note {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .form-privacy-note svg {
+            width: 12px; height: 12px;
+            flex-shrink: 0;
+            stroke: var(--text-muted);
+        }
+
+        /* ══════════════════════════════════════════
+           CONTACT
+        ══════════════════════════════════════════ */
+        .contact {
+            padding: 100px 0;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1px;
+            background: var(--cyan-10);
+            border: 1px solid var(--cyan-10);
+            margin-top: 3rem;
+        }
+
+        .contact-card {
+            background: var(--bg);
+            padding: 2.5rem 2rem;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .contact-card:hover {
+            background: var(--cyan-05);
+        }
+
+        .contact-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 0; height: 1px;
+            background: var(--cyan);
+            box-shadow: 0 0 8px var(--cyan);
+            transition: width 0.4s ease;
+        }
+
+        .contact-card:hover::after { width: 100%; }
+
+        .contact-icon {
+            width: 42px; height: 42px;
+            border: 1px solid var(--cyan-30);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.2rem;
+            transition: var(--transition);
+        }
+
+        .contact-card:hover .contact-icon {
+            border-color: var(--cyan);
+            box-shadow: 0 0 12px var(--cyan-30);
+        }
+
+        .contact-icon svg {
+            width: 18px; height: 18px;
+            stroke: var(--cyan);
+            fill: none;
+            stroke-width: 1.5;
+            filter: drop-shadow(0 0 3px var(--cyan));
+        }
+
+        .contact-card h3 {
+            font-size: 0.75rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.6rem;
+        }
+
+        .contact-card .contact-value {
+            font-size: 1.05rem;
+            color: var(--cyan);
+            font-weight: 600;
+        }
+
+        .contact-card .contact-sub {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
+        }
+
+        /* ══════════════════════════════════════════
+           FOOTER
+        ══════════════════════════════════════════ */
+        footer {
+            border-top: 1px solid var(--cyan-10);
+            padding: 2rem 0;
+            background: rgba(0,0,0,0.95);
+        }
+
+        .footer-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-copy {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            letter-spacing: 0.15em;
+        }
+
+        .footer-mark {
+            font-family: var(--font-display);
+            font-size: 0.6rem;
+            letter-spacing: 0.3em;
+            color: rgba(1,213,218,0.25);
+            text-transform: uppercase;
+        }
+
+        /* ══════════════════════════════════════════
+           UTILITIES
+        ══════════════════════════════════════════ */
+        @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .stat-item { border-right: none; border-bottom: 1px solid var(--cyan-10); }
+            .portfolio-grid { grid-template-columns: 1fr; }
+            .form-submit-row { flex-direction: column; align-items: stretch; }
+        }
+
+        /* ══════════════════════════════════════════
+           AUDIO / VIDEO SECTION
+        ══════════════════════════════════════════ */
+        .audio-section {
+            padding: 100px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Ambient glow behind section */
+        .audio-section::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 700px; height: 400px;
+            background: radial-gradient(ellipse, rgba(1,213,218,0.04) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .audio-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: start;
+            margin-top: 3rem;
+        }
+
+        @media (max-width: 900px) {
+            .audio-layout { grid-template-columns: 1fr; gap: 2.5rem; }
+        }
+
+        /* Left column — feature list */
+        .audio-features {
+            display: flex;
+            flex-direction: column;
+            gap: 0px;
+        }
+
+        .audio-feature-item {
+            display: grid;
+            grid-template-columns: 40px 1fr;
+            gap: 0 1rem;
+            align-items: start;
+            padding: 1.4rem 0;
+            border-bottom: 1px solid rgba(1,213,218,0.08);
+            transition: var(--transition);
+            cursor: default;
+        }
+
+        .audio-feature-item:first-child { border-top: 1px solid rgba(1,213,218,0.08); }
+
+        .audio-feature-item:hover {
+            background: var(--cyan-05);
+            padding-left: 12px;
+            margin-left: -12px;
+            margin-right: -12px;
+            padding-right: 12px;
+        }
+
+        .audio-feature-num {
+            font-family: var(--font-display);
+            font-size: 0.55rem;
+            color: var(--cyan);
+            letter-spacing: 0.2em;
+            opacity: 0.5;
+            padding-top: 3px;
+        }
+
+        .audio-feature-body h4 {
+            font-family: var(--font-display);
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--cyan);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.3rem;
+        }
+
+        .audio-feature-body p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* Right column — product showcase tiles */
+        .audio-tiles {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            background: var(--cyan-10);
+            border: 1px solid var(--cyan-10);
+        }
+
+        .audio-tile {
+            background: var(--bg);
+            padding: 1.75rem 1.5rem;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .audio-tile:hover { background: var(--cyan-05); }
+
+        .audio-tile::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 0; height: 1px;
+            background: var(--cyan);
+            box-shadow: 0 0 6px var(--cyan);
+            transition: width 0.35s ease;
+        }
+
+        .audio-tile:hover::after { width: 100%; }
+
+        .audio-tile-icon {
+            width: 36px; height: 36px;
+            border: 1px solid var(--cyan-30);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            transition: var(--transition);
+        }
+
+        .audio-tile:hover .audio-tile-icon {
+            border-color: var(--cyan);
+            box-shadow: 0 0 10px var(--cyan-30);
+        }
+
+        .audio-tile-icon svg {
+            width: 18px; height: 18px;
+            stroke: var(--cyan);
+            fill: none;
+            stroke-width: 1.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            filter: drop-shadow(0 0 3px var(--cyan));
+        }
+
+        .audio-tile h4 {
+            font-family: var(--font-display);
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--cyan);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.35rem;
+        }
+
+        .audio-tile p {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.55;
+        }
+
+        /* ── Featured service card (Window Tinting) ── */
+        .service-card.featured {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 0 2.5rem;
+            align-items: start;
+            border-color: var(--cyan-60);
+            box-shadow: 0 0 30px rgba(1,213,218,0.08), inset 0 0 20px rgba(1,213,218,0.03);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card.featured::after {
+            content: 'Primary Service';
+            position: absolute;
+            top: 14px; right: 16px;
+            font-family: var(--font-display);
+            font-size: 0.5rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--cyan);
+            opacity: 0.5;
+            border: 1px solid var(--cyan-30);
+            padding: 3px 8px;
+        }
+
+        .service-card.featured .service-left {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+            padding-top: 0.25rem;
+        }
+
+        .service-card.featured .service-right h3 {
+            font-size: 1.4rem;
+        }
+
+        .service-card.featured .service-right p {
+            max-width: 600px;
+        }
+
+        .service-card.featured .service-tint-list {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .service-card.featured .service-tint-list li {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            border: 1px solid var(--cyan-10);
+            padding: 4px 10px;
+            font-family: var(--font-display);
+            letter-spacing: 0.1em;
+            transition: var(--transition);
+        }
+
+        .service-card.featured:hover .service-tint-list li {
+            border-color: var(--cyan-30);
+            color: var(--cyan);
+        }
+
+        @media (max-width: 640px) {
+            .service-card.featured {
+                grid-template-columns: 1fr;
+                gap: 1rem 0;
+            }
+            .service-card.featured::after { display: none; }
+        }
+
+        /* ── MECP credential callout ── */
+        .mecp-callout {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 1.5rem 2rem;
+            background: rgba(0,0,0,0.8);
+            border: 1px solid var(--cyan-30);
+            border-left: 3px solid var(--cyan);
+            margin-bottom: 3rem;
+            box-shadow: 0 0 30px rgba(1,213,218,0.06), inset 0 0 20px rgba(1,213,218,0.02);
+            flex-wrap: wrap;
+            gap: 1.25rem;
+        }
+
+        .mecp-badge {
+            flex-shrink: 0;
+            width: 72px; height: 72px;
+            border: 2px solid var(--cyan);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px rgba(1,213,218,0.2), inset 0 0 15px rgba(1,213,218,0.05);
+            position: relative;
+        }
+
+        .mecp-badge::before {
+            content: '';
+            position: absolute;
+            inset: 3px;
+            border: 1px solid var(--cyan-30);
+        }
+
+        .mecp-badge-text {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: 900;
+            color: var(--cyan);
+            text-shadow: 0 0 10px var(--cyan);
+            line-height: 1;
+            letter-spacing: 0.05em;
+        }
+
+        .mecp-badge-sub {
+            font-family: var(--font-display);
+            font-size: 0.38rem;
+            letter-spacing: 0.2em;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-top: 3px;
+        }
+
+        .mecp-text h4 {
+            font-family: var(--font-display);
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--cyan);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.35rem;
+        }
+
+        .mecp-text p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            max-width: 620px;
+        }
+
+        .mecp-text p strong { color: var(--cyan); }
+
+        /* ── Audio photo gallery ── */
+        .audio-gallery {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: var(--cyan-10);
+            border: 1px solid var(--cyan-10);
+            margin-top: 3rem;
+        }
+
+        @media (max-width: 600px) {
+            .audio-gallery { grid-template-columns: 1fr 1fr; }
+        }
+
+        .audio-photo {
+            position: relative;
+            aspect-ratio: 4/3;
+            background: rgba(1,213,218,0.03);
+            overflow: hidden;
+        }
+
+        .audio-photo img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            filter: brightness(0.7) saturate(0.6);
+            transition: transform 0.5s ease, filter 0.3s ease;
+            display: block;
+        }
+
+        .audio-photo:hover img {
+            transform: scale(1.06);
+            filter: brightness(0.5) saturate(0.4);
+        }
+
+        /* Placeholder shown when no image src */
+        .audio-photo-placeholder {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: 1px dashed var(--cyan-30);
+        }
+
+        .audio-photo-placeholder svg {
+            width: 28px; height: 28px;
+            stroke: var(--cyan-30);
+            fill: none;
+            stroke-width: 1;
+        }
+
+        .audio-photo-placeholder span {
+            font-family: var(--font-display);
+            font-size: 0.5rem;
+            letter-spacing: 0.3em;
+            color: var(--cyan-30);
+            text-transform: uppercase;
+        }
+
+        .audio-photo-label {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            padding: 0.75rem 1rem;
+            background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);
+            font-family: var(--font-display);
+            font-size: 0.6rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--cyan);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .audio-photo:hover .audio-photo-label { opacity: 1; }
+
+        /* Brand badge strip */
+        .brand-strip {
+            margin-top: 2.5rem;
+            padding: 1.25rem 1.5rem;
+            background: var(--cyan-05);
+            border: 1px solid var(--cyan-10);
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .brand-strip-label {
+            font-family: var(--font-display);
+            font-size: 0.55rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        .brand-strip-divider {
+            width: 1px; height: 20px;
+            background: var(--cyan-30);
+            flex-shrink: 0;
+        }
+
+        .brand-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .brand-badge {
+            font-family: var(--font-display);
+            font-size: 0.55rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--cyan);
+            padding: 4px 10px;
+            border: 1px solid var(--cyan-30);
+            background: rgba(0,0,0,0.6);
+        }
+
+        /* ── TINT GUIDE SECTION ── */
+        .tint-guide {
+            padding: 100px 0;
+            background: rgba(1,213,218,0.02);
+            position: relative;
+        }
+
+        .tint-intro {
+            max-width: 680px;
+            margin: 0 auto 3.5rem;
+            text-align: center;
+        }
+
+        .tint-intro p {
+            font-family: var(--font-body);
+            font-size: 1rem;
+            color: var(--text-muted);
+            line-height: 1.75;
+        }
+
+        /* Alabama legal note */
+        .legal-note {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: var(--gold-05);
+            border: 1px solid var(--gold-30);
+            border-left: 3px solid var(--gold);
+            padding: 0.75rem 1.25rem;
+            margin-top: 1.5rem;
+            font-family: var(--font-display);
+            font-size: 0.6rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--gold);
+        }
+
+        /* Tint cards strip */
+        .tint-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 1px;
+            margin-bottom: 3rem;
+            background: var(--cyan-10);
+            border: 1px solid var(--cyan-10);
+        }
+
+        .tint-card {
+            position: relative;
+            overflow: hidden;
+            background: var(--bg);
+            transition: var(--transition);
+        }
+
+        .tint-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 2px; height: 0;
+            background: var(--gold);
+            box-shadow: 0 0 8px var(--gold);
+            transition: height 0.4s ease;
+        }
+
+        .tint-card:hover::before { height: 100%; }
+
+        .tint-card:hover {
+            background: rgba(201,168,76,0.04);
+        }
+
+        /* The visual window simulation */
+        .tint-window {
+            height: 110px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tint-window::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(180deg, #071d2e 0%, #0e3a52 55%, #1a6080 100%);
+        }
+
+        .tint-window::after {
+            content: '';
+            position: absolute; inset: 0;
+            background: rgba(0, 0, 0, var(--tint-opacity, 0.05));
+        }
+
+        .tint-window-glare {
+            position: absolute;
+            top: 14px; left: 12%; right: 35%;
+            height: 1px;
+            background: rgba(255,255,255,0.07);
+            z-index: 2;
+        }
+
+        .tint-badge {
+            position: absolute;
+            top: 0.5rem; right: 0.5rem;
+            background: rgba(0,0,0,0.8);
+            border: 1px solid var(--gold-30);
+            color: var(--gold);
+            font-family: var(--font-display);
+            font-size: 0.5rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            z-index: 3;
+        }
+
+        .tint-info {
+            padding: 1.25rem;
+        }
+
+        .tint-vlt {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: var(--cyan);
+            text-shadow: 0 0 15px var(--cyan-30);
+            line-height: 1;
+            margin-bottom: 0.25rem;
+        }
+
+        .tint-name {
+            font-family: var(--font-display);
+            font-size: 0.55rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .tint-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.3rem;
+        }
+
+        .tint-tag {
+            font-family: var(--font-display);
+            font-size: 0.45rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            border: 1px solid;
+            padding: 2px 6px;
+        }
+
+        .tint-tag.legal  { border-color: rgba(78,207,140,0.4);  color: rgba(78,207,140,0.85); }
+        .tint-tag.illegal{ border-color: rgba(224,85,85,0.4);   color: rgba(224,85,85,0.85); }
+        .tint-tag.privacy{ border-color: var(--cyan-30);        color: var(--text-muted); }
+        .tint-tag.heat   { border-color: var(--gold-30);        color: var(--gold); }
+        .tint-tag.popular{ border-color: var(--gold-30);        color: var(--gold); background: var(--gold-05); }
+
+        /* Comparison bar chart */
+        .tint-compare {
+            background: var(--bg);
+            border: 1px solid var(--cyan-10);
+            padding: 2rem 2.5rem;
+            position: relative;
+        }
+
+        .tint-compare::before {
+            content: '';
+            position: absolute;
+            top: -1px; left: 0;
+            width: 2px; height: 100%;
+            background: var(--cyan-30);
+        }
+
+        .compare-title {
+            font-family: var(--font-display);
+            font-size: 0.6rem;
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        .compare-row {
+            display: grid;
+            grid-template-columns: 110px 1fr 70px;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .compare-label {
+            font-family: var(--font-display);
+            font-size: 0.55rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            text-align: right;
+        }
+
+        .compare-track {
+            height: 6px;
+            background: var(--cyan-05);
+            border: 1px solid var(--cyan-10);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .compare-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--cyan-30), var(--cyan));
+            box-shadow: 0 0 8px var(--cyan-30);
+            width: 0;
+            transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .compare-fill.animate { width: var(--fill-width); }
+
+        .compare-val {
+            font-family: var(--font-display);
+            font-size: 0.55rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--cyan);
+            text-align: right;
+        }
+
+        .compare-divider-row {
+            grid-column: 1 / -1;
+            height: 1px;
+            background: var(--cyan-10);
+            margin: 0.5rem 0 1.5rem;
+        }
+
+        /* ── IN-FORM TINT REFERENCE ── */
+        .tint-ref-panel {
+            display: none;
+            background: rgba(201,168,76,0.03);
+            border: 1px solid var(--gold-30);
+            border-left: 2px solid var(--gold);
+            padding: 1.5rem;
+            margin-top: 1rem;
+            position: relative;
+        }
+
+        .tint-ref-panel.visible {
+            display: block;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        .tint-ref-title {
+            font-family: var(--font-display);
+            font-size: 0.55rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 1rem;
+            opacity: 0.85;
+        }
+
+        .tint-ref-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 1px;
+            background: var(--cyan-10);
+            border: 1px solid var(--cyan-10);
+        }
+
+        .tint-ref-chip {
+            background: var(--bg);
+            padding: 0.75rem 0.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tint-ref-chip::before {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 0; height: 2px;
+            background: var(--gold);
+            transition: width 0.3s ease;
+        }
+
+        .tint-ref-chip:hover::before { width: 100%; }
+
+        .tint-ref-chip:hover {
+            background: var(--gold-05);
+        }
+
+        .tint-ref-chip.selected {
+            background: var(--gold-10);
+            box-shadow: inset 0 0 12px rgba(201,168,76,0.1);
+        }
+
+        .tint-ref-chip.selected::before { width: 100%; }
+
+        .chip-preview {
+            height: 26px;
+            margin: -0.75rem -0.5rem 0.6rem;
+            background: linear-gradient(180deg, #071d2e 0%, #1a6080 100%);
+            position: relative;
+        }
+
+        .chip-preview::after {
+            content: '';
+            position: absolute; inset: 0;
+            background: rgba(0, 0, 0, var(--tint-opacity, 0.05));
+        }
+
+        .chip-vlt {
+            font-family: var(--font-display);
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--cyan);
+            text-shadow: 0 0 8px var(--cyan-30);
+            display: block;
+        }
+
+        .chip-label {
+            font-family: var(--font-display);
+            font-size: 0.45rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            display: block;
+            margin-top: 2px;
+        }
+
+        .chip-legal {
+            font-family: var(--font-display);
+            font-size: 0.42rem;
+            letter-spacing: 0.08em;
+            margin-top: 0.4rem;
+            display: block;
+            text-transform: uppercase;
+        }
+
+        .chip-legal.ok { color: rgba(78,207,140,0.8); }
+        .chip-legal.no { color: rgba(224,85,85,0.8); }
+
+        .tint-selected-display {
+            margin-top: 1rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--gold-10);
+            font-family: var(--font-display);
+            font-size: 0.55rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--gold);
+            min-height: 1.4em;
+        }
+
+        .compare-label {
+            font-size: 0.7rem;
+            color: rgba(1,213,218,0.55);
+            letter-spacing: 0.05em;
+            text-align: right;
+        }
+
+        .compare-track {
+            height: 8px;
+            background: rgba(1,213,218,0.06);
+            border: 1px solid rgba(1,213,218,0.08);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .compare-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--gold), var(--cyan));
+            transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 0 8px rgba(1,213,218,0.3);
+        }
+
+        .compare-val {
+            font-size: 0.7rem;
+            color: var(--cyan);
+            letter-spacing: 0.1em;
+            text-align: right;
+        }
+
+        /* ── IN-FORM TINT REFERENCE ── */
+        .tint-ref-panel {
+            display: none;
+            background: rgba(201,168,76,0.03);
+            border: 1px solid rgba(201,168,76,0.2);
+            margin-top: 1rem;
+            padding: 1.25rem;
+            position: relative;
+        }
+
+        .tint-ref-panel::before {
+            content: '';
+            position: absolute;
+            top: -1px; left: 10%; right: 10%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+        }
+
+        .tint-ref-panel.visible { display: block; animation: fadeIn 0.3s ease; }
+
+        .tint-ref-title {
+            font-size: 0.58rem;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 1rem;
+            opacity: 0.8;
+        }
+
+        .tint-ref-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 0.6rem;
+        }
+
+        .tint-ref-chip {
+            border: 1px solid rgba(1,213,218,0.15);
+            padding: 0.6rem 0.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tint-ref-chip:hover {
+            border-color: var(--gold);
+            background: rgba(201,168,76,0.05);
+        }
+
+        .tint-ref-chip.selected {
+            border-color: var(--gold);
+            background: rgba(201,168,76,0.1);
+            box-shadow: 0 0 12px rgba(201,168,76,0.15);
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- ══════════ HEADER ══════════ -->
+    <header id="site-header">
+        <nav class="container">
+            <a href="#home" class="logo" aria-label="Speedy Auto Tint home">
+                <img src="images/Main.png" alt="Speedy Auto Tint logo" onerror="this.style.display='none'">
+                <div class="logo-wordmark">
+                    Speedy Auto Tint
+                    <span class="logo-sub">Professional Customization</span>
+                </div>
+            </a>
+
+            <ul class="nav-links" role="navigation" aria-label="Main navigation">
+                <li><a href="#services">Services</a></li>
+                <li><a href="#audio">Audio &amp; Video</a></li>
+                <li><a href="#tint-guide">Tint Guide</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#portfolio">Work</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li><a href="#quote" class="nav-cta">Get a Quote</a></li>
+            </ul>
+
+            <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
+
+            <div class="mobile-menu" id="mobile-menu" role="navigation" aria-label="Mobile navigation">
+                <ul>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#audio">Audio &amp; Video</a></li>
+                    <li><a href="#tint-guide">Tint Guide</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#portfolio">Work</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                    <li><a href="#quote">Get a Quote</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- ══════════ HERO ══════════ -->
+    <section id="home" class="hero">
+        <!-- Background video -->
+        <video class="hero-video" autoplay muted loop playsinline preload="metadata"
+               aria-hidden="true">
+            <source src="images/hero-reel.mp4" type="video/mp4">
+        </video>
+        <div class="hero-video-overlay" aria-hidden="true"></div>
+        <div class="hero-grid" aria-hidden="true"></div>
+        <div class="hero-glow" aria-hidden="true"></div>
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-eyebrow">
+                    <div class="hero-eyebrow-line"></div>
+                    <span class="hero-eyebrow-text">Athens, Alabama</span>
+                </div>
+                <h1>
+                    <span>North Alabama's Premier</span>
+                    Window Tint<br>Specialists
+                </h1>
+                <p class="hero-desc">
+                    Professional window tinting, vehicle wrapping, and paint protection —
+                    plus MECP-certified car audio, video, alarms, and remote start installation.
+                </p>
+                <div class="hero-actions">
+                    <a href="#quote" class="btn btn-primary">Request a Quote</a>
+                    <a href="#services" class="btn btn-ghost">View Services</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════ STATS ══════════ -->
+    <div class="stats-bar">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-number">35+</span>
+                    <span class="stat-label">Years of Experience</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">200K+</span>
+                    <span class="stat-label">Vehicles Serviced</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">100%</span>
+                    <span class="stat-label">Satisfaction Guarantee</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">Lifetime</span>
+                    <span class="stat-label">Craftsmanship Warranty</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════ SERVICES ══════════ -->
+    <section id="services" class="services">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">What We Do</span>
+                <h2 class="section-title">Our Services</h2>
+            </div>
+            <div class="services-grid">
+
+                <!-- ── PRIMARY: Window Tinting ── -->
+                <div class="service-card featured">
+                    <div class="service-left">
+                        <span class="service-num">01</span>
+                        <div class="service-icon-wrap">
+                            <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="1"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="5" x2="12" y2="19"/></svg>
+                        </div>
+                    </div>
+                    <div class="service-right">
+                        <h3>Window Tinting</h3>
+                        <p>Our flagship service. Professional-grade film for passenger cars, SUVs, and trucks — blocking up to 99% of UV rays, reducing interior heat, and adding the privacy and style your vehicle deserves. Ceramic, carbon, and dyed film options available.</p>
+                        <ul class="service-tint-list">
+                            <li>Full Vehicle Tint</li>
+                            <li>Front Windows Only</li>
+                            <li>Ceramic Film Upgrade</li>
+                            <li>Windshield Strip</li>
+                            <li>Full Windshield</li>
+                            <li>Sunroof</li>
+                            <li>Tint Removal</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- ── Secondary services ── -->
+                <div class="service-card">
+                    <span class="service-num">02</span>
+                    <div class="service-icon-wrap">
+                        <svg viewBox="0 0 24 24"><path d="M12 3C6 3 2 7 2 12s4 9 10 9 10-4 10-9-4-9-10-9z"/><path d="M12 7v5l3 3"/></svg>
+                    </div>
+                    <h3>Vehicle Wrapping</h3>
+                    <p>Full or partial wraps in matte, gloss, satin, chrome, and custom finishes. Original paint fully protected underneath.</p>
+                </div>
+                <div class="service-card">
+                    <span class="service-num">03</span>
+                    <div class="service-icon-wrap">
+                        <svg viewBox="0 0 24 24"><path d="M12 2L3 7v7c0 5 4 9 9 10 5-1 9-5 9-10V7L12 2z"/></svg>
+                    </div>
+                    <h3>Paint Protection Film</h3>
+                    <p>Optically clear urethane film guarding against rock chips, road debris, and environmental damage. Self-healing options available.</p>
+                </div>
+                <div class="service-card">
+                    <span class="service-num">04</span>
+                    <div class="service-icon-wrap">
+                        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                    </div>
+                    <h3>Commercial Graphics</h3>
+                    <p>Fleet branding, business lettering, and commercial vehicle graphics. Turn your vehicle into a moving advertisement.</p>
+                </div>
+                <div class="service-card">
+                    <span class="service-num">05</span>
+                    <div class="service-icon-wrap">
+                        <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+                    </div>
+                    <h3>Audio, Video &amp; Alarms</h3>
+                    <p>MECP-certified installation of car audio, video, vehicle alarms, and remote start systems. See below for full details.</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════ PORTFOLIO ══════════ -->
+    <section id="portfolio" class="portfolio">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">Our Work</span>
+                <h2 class="section-title">Recent Projects</h2>
+            </div>
+        </div>
+        <div class="container">
+            <div class="portfolio-grid">
+                <!-- TINT PHOTO 1: replace src="" with e.g. src="images/tint-job-1.jpg" -->
+                <div class="portfolio-item">
+                    <img src=""
+                         alt="Window Tinting Project"
+                         onerror="this.src='https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&q=80'"
+                         loading="lazy">
+                    <div class="portfolio-overlay">
+                        <span class="portfolio-tag">Window Tinting</span>
+                    </div>
+                </div>
+                <!-- TINT PHOTO 2 -->
+                <div class="portfolio-item">
+                    <img src=""
+                         alt="Vehicle Wrap Project"
+                         onerror="this.src='https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&q=80'"
+                         loading="lazy">
+                    <div class="portfolio-overlay">
+                        <span class="portfolio-tag">Vehicle Wrap</span>
+                    </div>
+                </div>
+                <!-- TINT PHOTO 3 -->
+                <div class="portfolio-item">
+                    <img src=""
+                         alt="Paint Protection Project"
+                         onerror="this.src='https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=800&q=80'"
+                         loading="lazy">
+                    <div class="portfolio-overlay">
+                        <span class="portfolio-tag">Paint Protection</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TINT GUIDE SECTION -->
+    <section id="tint-guide" class="tint-guide">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">Know Your Options</span>
+                <h2 class="section-title">Window Tint Reference</h2>
+            </div>
+
+            <div class="tint-intro">
+                <p>VLT (Visible Light Transmission) is the percentage of light that passes through the film. Lower % = darker tint. Use this guide to find the shade that fits your needs — then reference it when filling out your quote below.</p>
+            </div>
+
+            <!-- Tint Level Cards -->
+            <div class="tint-cards">
+
+                <div class="tint-card">
+                    <div class="tint-window" style="--tint-opacity: 0.05">
+                        <div class="tint-window-glare"></div>
+                        <span class="tint-badge">CLEAR</span>
+                    </div>
+                    <div class="tint-info">
+                        <div class="tint-vlt">70%</div>
+                        <div class="tint-name">Clear / Stock</div>
+                        <div class="tint-tags">
+                            <span class="tint-tag heat">UV Block</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tint-card">
+                    <div class="tint-window" style="--tint-opacity: 0.32">
+                        <div class="tint-window-glare"></div>
+                        <span class="tint-badge">LIGHT</span>
+                    </div>
+                    <div class="tint-info">
+                        <div class="tint-vlt">50%</div>
+                        <div class="tint-name">Light Smoke</div>
+                        <div class="tint-tags">
+                            <span class="tint-tag privacy">Privacy+</span>
+                            <span class="tint-tag heat">Heat Reject</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tint-card">
+                    <div class="tint-window" style="--tint-opacity: 0.48">
+                        <div class="tint-window-glare"></div>
+                        <span class="tint-badge">MEDIUM</span>
+                    </div>
+                    <div class="tint-info">
+                        <div class="tint-vlt">35%</div>
+                        <div class="tint-name">Medium Smoke</div>
+                        <div class="tint-tags">
+                            <span class="tint-tag popular">★ Popular</span>
+                            <span class="tint-tag privacy">Privacy++</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tint-card">
+                    <div class="tint-window" style="--tint-opacity: 0.56">
+                        <div class="tint-window-glare"></div>
+                        <span class="tint-badge">DARK</span>
+                    </div>
+                    <div class="tint-info">
+                        <div class="tint-vlt">20%</div>
+                        <div class="tint-name">Dark Smoke</div>
+                        <div class="tint-tags">
+                            <span class="tint-tag popular">★ Popular</span>
+                            <span class="tint-tag privacy">Max Privacy</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tint-card">
+                    <div class="tint-window" style="--tint-opacity: 0.68">
+                        <div class="tint-window-glare"></div>
+                        <span class="tint-badge">LIMO</span>
+                    </div>
+                    <div class="tint-info">
+                        <div class="tint-vlt">5%</div>
+                        <div class="tint-name">Limo Black</div>
+                        <div class="tint-tags">
+                            <span class="tint-tag privacy">Blackout</span>
+                            <span class="tint-tag heat">Max Reject</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /.tint-cards -->
+
+            <!-- Comparison bars -->
+            <div class="tint-compare">
+                <p class="compare-title">Heat Rejection by VLT Level</p>
+
+                <div class="compare-row">
+                    <div class="compare-label">70% Clear</div>
+                    <div class="compare-track"><div class="compare-fill" data-fill="20"></div></div>
+                    <div class="compare-val">Low</div>
+                </div>
+                <div class="compare-row">
+                    <div class="compare-label">50% Light</div>
+                    <div class="compare-track"><div class="compare-fill" data-fill="45"></div></div>
+                    <div class="compare-val">Moderate</div>
+                </div>
+                <div class="compare-row">
+                    <div class="compare-label">35% Medium</div>
+                    <div class="compare-track"><div class="compare-fill" data-fill="63"></div></div>
+                    <div class="compare-val">Good</div>
+                </div>
+                <div class="compare-row">
+                    <div class="compare-label">20% Dark</div>
+                    <div class="compare-track"><div class="compare-fill" data-fill="80"></div></div>
+                    <div class="compare-val">High</div>
+                </div>
+                <div class="compare-row">
+                    <div class="compare-label">5% Limo</div>
+                    <div class="compare-track"><div class="compare-fill" data-fill="97"></div></div>
+                    <div class="compare-val">Maximum</div>
+                </div>
+
+                <div class="compare-row">
+                    <div class="compare-divider-row"></div>
+                </div>
+
+                <div class="compare-row">
+                    <div class="compare-label">UV Block</div>
+                    <div class="compare-track"><div class="compare-fill" data-fill="97"></div></div>
+                    <div class="compare-val">99%+ All</div>
+                </div>
+
+                <p style="font-size:0.7rem; font-family:var(--font-body); color:var(--text-muted); opacity:0.5; margin-top:1.5rem; line-height:1.6;">
+                    ✦ Ceramic films provide superior heat rejection at every VLT level — ask about our ceramic upgrade when requesting a quote.
+                </p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ══════════ AUDIO & VIDEO ══════════ -->
+    <section id="audio" class="audio-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">Certified Installation</span>
+                <h2 class="section-title">Audio, Video, Alarms &amp; Remote Start</h2>
+                <p style="margin-top:0.75rem; color:var(--text-muted); font-size:1rem; max-width:580px;">
+                    Every install is performed by an <strong style="color:var(--cyan)">MECP-certified technician</strong> —
+                    the industry's gold standard for professional automotive electronics installation.
+                </p>
+            </div>
+
+            <!-- MECP Credential Callout -->
+            <div class="mecp-callout">
+                <div class="mecp-badge">
+                    <span class="mecp-badge-text">MECP</span>
+                    <span class="mecp-badge-sub">Certified</span>
+                </div>
+                <div class="mecp-text">
+                    <h4>MECP Certified Technician on Staff</h4>
+                    <p>
+                        The <strong>Mobile Electronics Certification Program (MECP)</strong> is the automotive
+                        electronics industry's only nationally recognized certification. Our technician has passed
+                        rigorous testing covering installation theory, vehicle electrical systems, signal processing,
+                        and safety standards — so your vehicle is in qualified hands every time.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Service breakdown + tiles -->
+            <div class="audio-layout">
+
+                <!-- Left: detailed service list -->
+                <div class="audio-features">
+                    <div class="audio-feature-item">
+                        <span class="audio-feature-num">01</span>
+                        <div class="audio-feature-body">
+                            <h4>Head Units &amp; Source</h4>
+                            <p>Apple CarPlay, Android Auto, touchscreen navigation, and Bluetooth upgrades. Seamless dash integration with OEM-fit kits for any make and model.</p>
+                        </div>
+                    </div>
+                    <div class="audio-feature-item">
+                        <span class="audio-feature-num">02</span>
+                        <div class="audio-feature-body">
+                            <h4>Speakers &amp; Amplifiers</h4>
+                            <p>Component and coaxial speaker upgrades, multi-channel amplifiers, signal processors, and professional tuning. Sound deadening installation available.</p>
+                        </div>
+                    </div>
+                    <div class="audio-feature-item">
+                        <span class="audio-feature-num">03</span>
+                        <div class="audio-feature-body">
+                            <h4>Subwoofers &amp; Custom Enclosures</h4>
+                            <p>Ported and sealed box builds, custom fiberglass fabrication, and powered subwoofer upgrades. Built to fit your vehicle — not a one-size box.</p>
+                        </div>
+                    </div>
+                    <div class="audio-feature-item">
+                        <span class="audio-feature-num">04</span>
+                        <div class="audio-feature-body">
+                            <h4>Video &amp; Cameras</h4>
+                            <p>Rear-seat entertainment screens, headrest monitors, overhead displays, backup cameras, dashcams, and 360° parking systems.</p>
+                        </div>
+                    </div>
+                    <div class="audio-feature-item">
+                        <span class="audio-feature-num">05</span>
+                        <div class="audio-feature-body">
+                            <h4>Vehicle Alarms &amp; Security</h4>
+                            <p>Professional alarm system installation with shock sensors, glass-break detection, siren, and LED indicators. Protect your investment with a system installed right.</p>
+                        </div>
+                    </div>
+                    <div class="audio-feature-item">
+                        <span class="audio-feature-num">06</span>
+                        <div class="audio-feature-body">
+                            <h4>Remote Start Systems</h4>
+                            <p>1-button, 2-way, and smartphone-controlled remote start installation. Pre-cool or pre-heat your vehicle and keep it locked until you're ready. Compatible with manual and automatic transmissions.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: product tile grid -->
+                <div>
+                    <div class="audio-tiles">
+                        <div class="audio-tile">
+                            <div class="audio-tile-icon">
+                                <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="10" rx="1"/><line x1="12" y1="17" x2="12" y2="21"/><line x1="8" y1="21" x2="16" y2="21"/></svg>
+                            </div>
+                            <h4>Head Units</h4>
+                            <p>CarPlay &amp; Android Auto double-DIN installs with OEM-fit dash kits.</p>
+                        </div>
+                        <div class="audio-tile">
+                            <div class="audio-tile-icon">
+                                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg>
+                            </div>
+                            <h4>Speaker Systems</h4>
+                            <p>Component sets, coaxials, tweeters — installed and professionally tuned.</p>
+                        </div>
+                        <div class="audio-tile">
+                            <div class="audio-tile-icon">
+                                <svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="12" rx="1"/><path d="M12 8V5"/><circle cx="12" cy="14" r="3"/></svg>
+                            </div>
+                            <h4>Subwoofers</h4>
+                            <p>Custom enclosures and powered subs built to your vehicle.</p>
+                        </div>
+                        <div class="audio-tile">
+                            <div class="audio-tile-icon">
+                                <svg viewBox="0 0 24 24"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+                            </div>
+                            <h4>Screens &amp; Video</h4>
+                            <p>Rear-seat entertainment, headrests, dashcams, backup cameras.</p>
+                        </div>
+                        <div class="audio-tile">
+                            <div class="audio-tile-icon">
+                                <!-- Alarm / shield icon -->
+                                <svg viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+                            </div>
+                            <h4>Alarms &amp; Security</h4>
+                            <p>Full alarm systems with sensors, sirens, and keyless entry.</p>
+                        </div>
+                        <div class="audio-tile">
+                            <div class="audio-tile-icon">
+                                <!-- Remote / key icon -->
+                                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>
+                            </div>
+                            <h4>Remote Start</h4>
+                            <p>1-button, 2-way, and app-based remote start for any vehicle.</p>
+                        </div>
+                    </div>
+
+                    <!-- Brand strip -->
+                    <div class="brand-strip">
+                        <span class="brand-strip-label">Featured Brands</span>
+                        <div class="brand-strip-divider"></div>
+                        <div class="brand-badges">
+                            <span class="brand-badge">JL Audio</span>
+                            <span class="brand-badge">Alpine</span>
+                            <span class="brand-badge">Kenwood</span>
+                            <span class="brand-badge">Pioneer</span>
+                            <span class="brand-badge">Rockford Fosgate</span>
+                            <span class="brand-badge">Compustar</span>
+                            <span class="brand-badge">Viper</span>
+                            <span class="brand-badge">DEI</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Photo Gallery -->
+            <div style="margin-top:3rem;">
+                <span class="section-label">Installation Gallery</span>
+                <div class="audio-gallery">
+
+                    <!-- PHOTO SLOT 1 — Head Unit / Android Radio (real photo) -->
+                    <div class="audio-photo">
+                        <img src="images/android-radio-install.jpg" alt="Android radio head unit installation" loading="lazy">
+                        <div class="audio-photo-label">Head Unit Install</div>
+                    </div>
+
+                    <!-- PHOTO SLOT 2 -->
+                    <div class="audio-photo">
+                        <img src="" alt="Speaker installation" onerror="this.style.display='none'">
+                        <div class="audio-photo-placeholder">
+                            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                            <span>Your Photo Here</span>
+                        </div>
+                        <div class="audio-photo-label">Speaker System</div>
+                    </div>
+
+                    <!-- PHOTO SLOT 3 — Custom Subwoofer Enclosure (real photo) -->
+                    <div class="audio-photo">
+                        <img src="images/custom-subwoofer-enclosure.jpg" alt="Custom subwoofer enclosure build" loading="lazy">
+                        <div class="audio-photo-label">Custom Subwoofer Enclosure</div>
+                    </div>
+
+                    <!-- PHOTO SLOT 4 — Alarm & Security (real photo) -->
+                    <div class="audio-photo">
+                        <img src="images/alarm.jpg" alt="Vehicle alarm and security system" loading="lazy">
+                        <div class="audio-photo-label">Alarm &amp; Security</div>
+                    </div>
+
+                    <!-- PHOTO SLOT 5 — Remote Start (real photo) -->
+                    <div class="audio-photo">
+                        <img src="images/remote-start.jpg" alt="Remote start system installation" loading="lazy">
+                        <div class="audio-photo-label">Remote Start</div>
+                    </div>
+
+                    <!-- PHOTO SLOT 6 — Rear Seat Entertainment (real photo) -->
+                    <div class="audio-photo">
+                        <img src="images/rear_entertainment.jpg" alt="Rear seat entertainment screens installed in Range Rover" loading="lazy">
+                        <div class="audio-photo-label">Rear Seat Entertainment</div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ══════════ ABOUT ══════════ -->
+    <section id="about" class="about">
+        <div class="container">
+            <div class="about-layout">
+                <div class="about-text">
+                    <span class="section-label">Our Story</span>
+                    <h2>Why Choose Speedy Auto Tint?</h2>
+                    <p>
+                        With over 35 years serving the Huntsville area, window tinting is what we built
+                        our name on — and we're still the best at it. Clean installs, zero bubbles,
+                        and film that lasts.
+                    </p>
+                    <p>
+                        We've expanded to offer MECP-certified automotive electronics installation —
+                        audio, video, alarms, and remote start — handled with the same standard of
+                        care we bring to every tint job.
+                    </p>
+                    <ul class="feature-list">
+                        <li>Huntsville's window tinting specialists since day one</li>
+                        <li>MECP-certified car audio &amp; electronics technician</li>
+                        <li>Premium quality materials — no budget film, no shortcuts</li>
+                        <li>Lifetime craftsmanship warranty on tint installs</li>
+                        <li>Fast turnaround — most tint jobs same or next day</li>
+                        <li>Free consultations and no-obligation quotes</li>
+                    </ul>
+                </div>
+                <div class="about-visual">
+                    <img src="images/l100-5300-window-tinting-animated-led-sign-giant.gif"
+                         alt="Speedy Auto Tint shop"
+                         onerror="this.src='https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=600&q=80'">
+                    <div class="about-visual-frame"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════ QUOTE FORM ══════════ -->
+    <section id="quote" class="quote-section">
+        <div class="container form-container">
+            <div class="section-header">
+                <span class="section-label">Get Started</span>
+                <h2 class="section-title">Request a Quote</h2>
+                <p style="margin-top:0.75rem; color:var(--text-muted); font-size:0.95rem;">
+                    Fill out the form below and we'll reach out within one business day via text or email.
+                </p>
+            </div>
+
+            <div class="form-card">
+                <!--
+                    FORM SETUP INSTRUCTIONS (read before going live):
+                    ─────────────────────────────────────────────────
+                    1. Go to https://formspree.io and create a free account.
+                    2. Create a new form — get your unique form ID (looks like "xrgvkwpq").
+                    3. Replace "YOUR_FORM_ID" in the action URL below with your actual ID.
+                    4. In Formspree dashboard, confirm your notification email address.
+                    5. Optional SMS: In Formspree → Integrations → Webhooks, connect to
+                       Zapier (free tier) → "Send SMS" via Google Messages or use a
+                       free Twilio trial account for text notifications.
+                    6. Recommended: Enable Formspree spam filtering (reCAPTCHA-free honeypot
+                       is already included via the hidden _gotcha field below).
+                    ─────────────────────────────────────────────────
+                -->
+                <form
+                    id="quote-form"
+                    action="https://formspree.io/f/YOUR_FORM_ID"
+                    method="POST"
+                    novalidate
+                    autocomplete="on"
+                >
+                    <!-- Honeypot anti-spam (hidden from real users) -->
+                    <input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off">
+                    <!-- Redirect after submission -->
+                    <input type="hidden" name="_next" value="thank-you.html">
+                    <!-- Subject line in your email inbox -->
+                    <input type="hidden" name="_subject" value="New Quote Request — Speedy Auto Tint">
+
+                    <div class="form-grid">
+                        <!-- Name -->
+                        <div class="field">
+                            <label for="name">Full Name <span style="color:var(--red)">*</span></label>
+                            <input type="text" id="name" name="name"
+                                   placeholder="John Smith"
+                                   required autocomplete="name">
+                        </div>
+
+                        <!-- Phone -->
+                        <div class="field">
+                            <label for="phone">Mobile Number <span style="color:var(--red)">*</span></label>
+                            <input type="tel" id="phone" name="phone"
+                                   placeholder="(256) 555-0100"
+                                   required autocomplete="tel">
+                        </div>
+
+                        <!-- Email -->
+                        <div class="field">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email"
+                                   placeholder="you@example.com"
+                                   autocomplete="email">
+                        </div>
+
+                        <!-- Preferred Date -->
+                        <div class="field">
+                            <label for="preferred_date">Preferred Date</label>
+                            <input type="date" id="preferred_date" name="preferred_date">
+                        </div>
+
+                        <!-- Vehicle: Year -->
+                        <div class="field">
+                            <label for="year">Vehicle Year <span style="color:var(--red)">*</span></label>
+                            <input type="text" id="year" name="year"
+                                   placeholder="2022"
+                                   pattern="\d{4}"
+                                   maxlength="4"
+                                   required>
+                        </div>
+
+                        <!-- Vehicle: Make -->
+                        <div class="field">
+                            <label for="make">Make <span style="color:var(--red)">*</span></label>
+                            <input type="text" id="make" name="make"
+                                   placeholder="Toyota"
+                                   required autocomplete="off">
+                        </div>
+
+                        <!-- Vehicle: Model -->
+                        <div class="field">
+                            <label for="model">Model <span style="color:var(--red)">*</span></label>
+                            <input type="text" id="model" name="model"
+                                   placeholder="Camry"
+                                   required autocomplete="off">
+                        </div>
+
+                        <!-- Service -->
+                        <div class="field">
+                            <label for="service">Service Needed <span style="color:var(--red)">*</span></label>
+                            <select id="service" name="service" required>
+                                <option value="" disabled selected>Select a service…</option>
+                                <optgroup label="Window Tinting">
+                                    <option value="Full Vehicle Tint">Full Vehicle Tint</option>
+                                    <option value="Front Windows Only">Front Windows Only</option>
+                                    <option value="Tint Removal">Tint Removal</option>
+                                </optgroup>
+                                <optgroup label="Wraps &amp; Protection">
+                                    <option value="Full Vehicle Wrap">Full Vehicle Wrap</option>
+                                    <option value="Partial Wrap">Partial Wrap</option>
+                                    <option value="Paint Protection Film (PPF)">Paint Protection Film (PPF)</option>
+                                </optgroup>
+                                <optgroup label="Other">
+                                    <option value="Commercial Graphics">Commercial Graphics</option>
+                                    <option value="Not Sure — Need Consultation">Not Sure — Need Consultation</option>
+                                </optgroup>
+                                <optgroup label="Car Audio &amp; Video">
+                                    <option value="Head Unit / Stereo Install">Head Unit / Stereo Install</option>
+                                    <option value="Speaker Upgrade">Speaker Upgrade</option>
+                                    <option value="Subwoofer &amp; Amplifier">Subwoofer &amp; Amplifier</option>
+                                    <option value="Full Audio System Build">Full Audio System Build</option>
+                                    <option value="Backup Camera / Dashcam">Backup Camera / Dashcam</option>
+                                    <option value="Rear-Seat Entertainment">Rear-Seat Entertainment</option>
+                                </optgroup>
+                                <optgroup label="Alarms &amp; Remote Start">
+                                    <option value="Vehicle Alarm System">Vehicle Alarm System</option>
+                                    <option value="Remote Start (Basic)">Remote Start — 1-Button</option>
+                                    <option value="Remote Start (2-Way)">Remote Start — 2-Way</option>
+                                    <option value="Remote Start (Smartphone)">Remote Start — Smartphone App</option>
+                                    <option value="Alarm + Remote Start Combo">Alarm + Remote Start Combo</option>
+                                </optgroup>
+                            </select>
+                        </div>
+
+                        <!-- Tint Level Reference (shown only for tinting services) -->
+                        <div class="field full">
+                            <input type="hidden" id="tint_level" name="tint_level" value="">
+                            <div class="tint-ref-panel" id="tint-ref-panel">
+                                <p class="tint-ref-title">◈ Select Your Shade — tap a level to include it with your request</p>
+                                <div class="tint-ref-grid">
+                                    <div class="tint-ref-chip" data-vlt="70" data-name="70% Clear / Stock">
+                                        <div class="chip-preview" style="--tint-opacity:0.05"></div>
+                                        <span class="chip-vlt">70%</span>
+                                        <span class="chip-label">Clear</span>
+                                    </div>
+                                    <div class="tint-ref-chip" data-vlt="50" data-name="50% Light Smoke">
+                                        <div class="chip-preview" style="--tint-opacity:0.32"></div>
+                                        <span class="chip-vlt">50%</span>
+                                        <span class="chip-label">Light</span>
+                                    </div>
+                                    <div class="tint-ref-chip" data-vlt="35" data-name="35% Medium Smoke">
+                                        <div class="chip-preview" style="--tint-opacity:0.48"></div>
+                                        <span class="chip-vlt">35%</span>
+                                        <span class="chip-label">Medium</span>
+                                    </div>
+                                    <div class="tint-ref-chip" data-vlt="20" data-name="20% Dark Smoke">
+                                        <div class="chip-preview" style="--tint-opacity:0.56"></div>
+                                        <span class="chip-vlt">20%</span>
+                                        <span class="chip-label">Dark</span>
+                                    </div>
+                                    <div class="tint-ref-chip" data-vlt="5" data-name="5% Limo Black">
+                                        <div class="chip-preview" style="--tint-opacity:0.68"></div>
+                                        <span class="chip-vlt">5%</span>
+                                        <span class="chip-label">Limo</span>
+                                    </div>
+                                </div>
+                                <div class="tint-selected-display" id="tint-selected-display"></div>
+                            </div>
+                        </div>
+
+                        <!-- Notes -->
+                        <div class="field full">
+                            <label for="notes">Additional Notes</label>
+                            <textarea id="notes" name="notes"
+                                      placeholder="Any details about your vehicle, previous work, specific requests, or questions…"
+                                      rows="3"></textarea>
+                        </div>
+
+                        <!-- Extras -->
+                        <div class="field full">
+                            <button type="button" class="extras-toggle-btn" id="extrasToggle" aria-expanded="false">
+                                <div class="toggle-icon"><span></span><span style="transform:rotate(90deg)"></span></div>
+                                Add-On Options
+                            </button>
+                            <div class="extras-grid" id="extrasGrid" role="group" aria-label="Optional add-ons">
+                                <div class="addon-card">
+                                    <input type="checkbox" id="addon-ceramic" name="addon_ceramic" value="Premium Ceramic Tint Upgrade">
+                                    <label class="addon-label" for="addon-ceramic">
+                                        <div class="addon-check"></div>
+                                        Ceramic Tint Upgrade
+                                    </label>
+                                </div>
+                                <div class="addon-card">
+                                    <input type="checkbox" id="addon-strip" name="addon_windshield_strip" value="Windshield Strip">
+                                    <label class="addon-label" for="addon-strip">
+                                        <div class="addon-check"></div>
+                                        Windshield Strip
+                                    </label>
+                                </div>
+                                <div class="addon-card">
+                                    <input type="checkbox" id="addon-fullwind" name="addon_full_windshield" value="Full Windshield Tint">
+                                    <label class="addon-label" for="addon-fullwind">
+                                        <div class="addon-check"></div>
+                                        Full Windshield Tint
+                                    </label>
+                                </div>
+                                <div class="addon-card">
+                                    <input type="checkbox" id="addon-sunroof" name="addon_sunroof" value="Sunroof">
+                                    <label class="addon-label" for="addon-sunroof">
+                                        <div class="addon-check"></div>
+                                        Sunroof
+                                    </label>
+                                </div>
+                                <div class="addon-card">
+                                    <input type="checkbox" id="addon-headlight" name="addon_headlight" value="Headlight Vinyl / Blackout">
+                                    <label class="addon-label" for="addon-headlight">
+                                        <div class="addon-check"></div>
+                                        Headlight/Taillight Tint
+                                    </label>
+                                </div>
+                                <div class="addon-card">
+                                    <input type="checkbox" id="addon-carplay" name="addon_carplay" value="Apple CarPlay / Android Auto">
+                                    <label class="addon-label" for="addon-carplay">
+                                        <div class="addon-check"></div>
+                                        CarPlay / Android Auto
+                                    </label>
+                                </div>
+                                <div class="addon-card">
+                                    <input type="checkbox" id="addon-sounddead" name="addon_sound_deadening" value="Sound Deadening">
+                                    <label class="addon-label" for="addon-sounddead">
+                                        <div class="addon-check"></div>
+                                        Sound Deadening/Dynomat
+                                    </label>
+                                </div>
+                                <div class="addon-card">
+                                    <input type="checkbox" id="addon-camera" name="addon_camera" value="Backup / Dashcam">
+                                    <label class="addon-label" for="addon-camera">
+                                        <div class="addon-check"></div>
+                                        Backup camera / Dashcam
+                                    </label>
+                                </div>
+                                <div class="addon-card">
+                                    <input type="checkbox" id="addon-remotestart" name="addon_remote_start" value="Remote Start">
+                                    <label class="addon-label" for="addon-remotestart">
+                                        <div class="addon-check"></div>
+                                        Remote Start
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- /form-grid -->
+
+                    <div class="form-notice">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" style="flex-shrink:0;margin-top:2px;color:var(--cyan-60)"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        <p>
+                            <strong>Text preferred.</strong> We'll follow up via the mobile number you provide. 
+                            Your information is used only to respond to this request — we don't sell or share your data.
+                        </p>
+                    </div>
+
+                    <div class="form-submit-row">
+                        <span class="form-privacy-note">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L3 7v7c0 5 4 9 9 10 5-1 9-5 9-10V7L12 2z"/></svg>
+                            No account required · No tracking
+                        </span>
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
+                            Send Request
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════ CONTACT ══════════ -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">Reach Us</span>
+                <h2 class="section-title">Contact</h2>
+            </div>
+            <div class="contact-grid">
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2A19.79 19.79 0 013.77 6.18 2 2 0 015.77 4h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L9.91 11.1a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+                    </div>
+                    <h3>Phone / Text</h3>
+                    <div class="contact-value"><a href="tel:+12565550100">(256) 555-0100</a></div>
+                    <div class="contact-sub">Text responses preferred</div>
+                </div>
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                    </div>
+                    <h3>Email</h3>
+                    <div class="contact-value"><a href="/cdn-cgi/l/email-protection#7a13141c153a090a1f1f1e031b0f0e150e13140e54191517"><span class="__cf_email__" data-cfemail="84edeae2ebc4f7f4e1e1e0fde5f1f0ebf0edeaf0aae7ebe9">[email&#160;protected]</span></a></div>
+                    <div class="contact-sub">Replies within 1 business day</div>
+                </div>
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    </div>
+                    <h3>Location</h3>
+                    <div class="contact-value">14051 Hwy 72 Athens, AL</div>
+                    <div class="contact-sub">By appointment — contact us first</div>
+                </div>
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
+                    <h3>Hours</h3>
+                    <div class="contact-value">Mon – Sat - *Sun Appointment only</div>
+                    <div class="contact-sub">9:00 AM – 7:00 PM</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════ FOOTER ══════════ -->
+    <footer>
+        <div class="container">
+            <div class="footer-inner">
+                <span class="footer-copy">© 2026 Speedy Auto Tint. All rights reserved.</span>
+                <span class="footer-mark">Huntsville, Alabama</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ══════════ SCRIPTS ══════════ -->
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    /* ── Mobile menu ── */
+    const hamburger   = document.getElementById('hamburger');
+    const mobileMenu  = document.getElementById('mobile-menu');
+
+    hamburger.addEventListener('click', () => {
+        const isOpen = mobileMenu.classList.toggle('open');
+        hamburger.classList.toggle('open', isOpen);
+        hamburger.setAttribute('aria-expanded', isOpen);
+    });
+
+    mobileMenu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            mobileMenu.classList.remove('open');
+            hamburger.classList.remove('open');
+            hamburger.setAttribute('aria-expanded', 'false');
+        });
+    });
+
+    document.addEventListener('click', e => {
+        if (!hamburger.contains(e.target) && !mobileMenu.contains(e.target)) {
+            mobileMenu.classList.remove('open');
+            hamburger.classList.remove('open');
+        }
+    });
+
+    /* ── Header scroll state ── */
+    const header = document.getElementById('site-header');
+    window.addEventListener('scroll', () => {
+        header.classList.toggle('scrolled', window.scrollY > 80);
+    }, { passive: true });
+
+    /* ── Extras toggle ── */
+    const extrasToggle = document.getElementById('extrasToggle');
+    const extrasGrid   = document.getElementById('extrasGrid');
+
+    extrasToggle.addEventListener('click', () => {
+        const isOpen = extrasGrid.classList.toggle('visible');
+        extrasToggle.classList.toggle('open', isOpen);
+        extrasToggle.setAttribute('aria-expanded', isOpen);
+    });
+
+    /* ── Form validation & submit ── */
+    const form      = document.getElementById('quote-form');
+    const submitBtn = document.getElementById('submitBtn');
+
+    form.addEventListener('submit', e => {
+        // Basic front-end validation
+        const required = form.querySelectorAll('[required]');
+        let valid = true;
+        required.forEach(field => {
+            field.style.borderColor = '';
+            if (!field.value.trim()) {
+                field.style.borderColor = 'var(--red)';
+                field.style.boxShadow   = '0 0 10px var(--red-30)';
+                valid = false;
+            }
+        });
+        if (!valid) {
+            e.preventDefault();
+            form.querySelector('[required]').focus();
+            return;
+        }
+        // Disable button to prevent double submit
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending…';
+    });
+
+    /* ── Clean validation highlight on input ── */
+    form.querySelectorAll('input, select, textarea').forEach(field => {
+        field.addEventListener('input', () => {
+            field.style.borderColor = '';
+            field.style.boxShadow   = '';
+        });
+    });
+
+    /* ── Set date minimum    const today = new Date().toISOString().split('T')[0];
+    const dateInput = document.getElementById('preferred-date');
+    if (dateInput) dateInput.min = today;
+
+    /* ── Tint reference panel ── */
+    const serviceSelect    = document.getElementById('service');
+    const tintRefPanel     = document.getElementById('tint-ref-panel');
+    const tintLevelInput   = document.getElementById('tint_level');
+    const tintSelectedDisp = document.getElementById('tint-selected-display');
+
+    const TINT_SERVICES = new Set([
+        'Full Vehicle Tint', 'Front Windows Only', 'Tint Removal'
+    ]);
+
+    function updateTintPanel() {
+        const isTinting = TINT_SERVICES.has(serviceSelect.value);
+        if (isTinting) {
+            tintRefPanel.classList.add('visible');
+        } else {
+            tintRefPanel.classList.remove('visible');
+            tintLevelInput.value = '';
+            if (tintSelectedDisp) tintSelectedDisp.textContent = '';
+            document.querySelectorAll('.tint-ref-chip').forEach(c => c.classList.remove('selected'));
+        }
+    }
+
+    if (serviceSelect) serviceSelect.addEventListener('change', updateTintPanel);
+
+    document.querySelectorAll('.tint-ref-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+            const already = chip.classList.contains('selected');
+            document.querySelectorAll('.tint-ref-chip').forEach(c => c.classList.remove('selected'));
+            if (!already) {
+                chip.classList.add('selected');
+                tintLevelInput.value = chip.dataset.name;
+                if (tintSelectedDisp) {
+                    const legal = chip.dataset.legal === 'ok'
+                        ? 'Legal for all windows in Alabama.'
+                        : 'Alabama law restricts this shade to rear windows only.';
+                    tintSelectedDisp.textContent = '✦ Selected: ' + chip.dataset.name + ' — ' + legal;
+                }
+            } else {
+                tintLevelInput.value = '';
+                if (tintSelectedDisp) tintSelectedDisp.textContent = '';
+            }
+        });
+    });
+
+    /* ── Bar chart scroll animation ── */
+    const barFills = document.querySelectorAll('.compare-fill[data-fill]');
+
+    if (barFills.length && 'IntersectionObserver' in window) {
+        const barObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.width = entry.target.dataset.fill + '%';
+                    barObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.3 });
+
+        barFills.forEach(fill => {
+            fill.style.width = '0%';
+            fill.style.transition = 'width 1.2s cubic-bezier(0.16, 1, 0.3, 1)';
+            barObserver.observe(fill);
+        });
+    } else {
+        // Fallback: set widths immediately
+        barFills.forEach(fill => {
+            fill.style.width = fill.dataset.fill + '%';
+        });
+    }
+
+    </script>
+</body>
+</html>

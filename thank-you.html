@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quote Received — Speedy Auto Tint</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cyan: #01D5DA;
+            --cyan-30: rgba(1,213,218,0.3);
+            --cyan-10: rgba(1,213,218,0.1);
+            --text-muted: rgba(1,213,218,0.6);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #000;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Rajdhani', monospace;
+            color: var(--cyan);
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(0deg, transparent 0px, rgba(1,213,218,0.04) 1px, transparent 2px),
+                linear-gradient(90deg, transparent 0px, rgba(1,213,218,0.04) 1px, transparent 2px);
+            background-size: 60px 60px;
+            pointer-events: none;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+            animation: scan 8s linear infinite;
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        @keyframes scan {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(100vh); }
+        }
+
+        .card {
+            position: relative;
+            z-index: 2;
+            background: rgba(0,0,0,0.9);
+            border: 1px solid var(--cyan-30);
+            padding: clamp(32px, 6vw, 60px) clamp(28px, 7vw, 72px);
+            text-align: center;
+            max-width: 520px;
+            width: calc(100% - 40px);
+            box-shadow: 0 0 60px rgba(1,213,218,0.08);
+            animation: reveal 0.8s cubic-bezier(0.4,0,0.2,1) forwards;
+        }
+
+        @keyframes reveal {
+            from { opacity: 0; transform: translateY(20px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Corner accents */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -1px; left: -1px;
+            width: 24px; height: 24px;
+            border-top: 2px solid var(--cyan);
+            border-left: 2px solid var(--cyan);
+        }
+
+        .card::after {
+            content: '';
+            position: absolute;
+            bottom: -1px; right: -1px;
+            width: 24px; height: 24px;
+            border-bottom: 2px solid var(--cyan);
+            border-right: 2px solid var(--cyan);
+        }
+
+        /* Check mark */
+        .check-wrap {
+            width: 72px; height: 72px;
+            border: 1px solid var(--cyan-30);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            box-shadow: 0 0 20px var(--cyan-10);
+            animation: checkPulse 2s ease-in-out 0.8s infinite;
+        }
+
+        @keyframes checkPulse {
+            0%, 100% { box-shadow: 0 0 20px var(--cyan-10); }
+            50% { box-shadow: 0 0 30px rgba(1,213,218,0.25); }
+        }
+
+        .check-wrap svg {
+            width: 32px; height: 32px;
+            stroke: var(--cyan);
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            filter: drop-shadow(0 0 6px var(--cyan));
+        }
+
+        .eyebrow {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 0.4em;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+        }
+
+        h1 {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(1.2rem, 3.5vw, 1.7rem);
+            font-weight: 700;
+            color: var(--cyan);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            text-shadow: 0 0 20px rgba(1,213,218,0.3);
+            margin-bottom: 1rem;
+        }
+
+        .divider {
+            width: 40px; height: 1px;
+            background: var(--cyan-30);
+            margin: 1.2rem auto;
+        }
+
+        p {
+            font-size: 1rem;
+            color: var(--text-muted);
+            line-height: 1.75;
+            max-width: 360px;
+            margin: 0 auto;
+        }
+
+        p strong { color: var(--cyan); }
+
+        .return-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.65rem;
+            font-weight: 600;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: #000;
+            background: var(--cyan);
+            padding: 13px 32px;
+            text-decoration: none;
+            margin-top: 2.5rem;
+            clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(1,213,218,0.25);
+        }
+
+        .return-btn:hover {
+            background: #fff;
+            box-shadow: 0 0 35px var(--cyan);
+            transform: translateY(-2px);
+        }
+
+        .return-btn svg {
+            width: 12px; height: 12px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="check-wrap">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="eyebrow">Transmission Confirmed</div>
+        <h1>Quote Request Received</h1>
+        <div class="divider"></div>
+        <p>
+            Your request has been submitted. We'll follow up via
+            <strong>text or email</strong> within one business day.
+        </p>
+        <p style="margin-top:0.75rem; font-size:0.85rem;">
+            Questions? Call or text us directly at<br>
+            <a href="tel:+12565550100" style="color:var(--cyan); font-weight:600;">(256) 555-0100</a>
+        </p>
+        <a href="main.html" class="return-btn">
+            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+            Return to Site
+        </a>
+    </div>
+</body>
+</html>
