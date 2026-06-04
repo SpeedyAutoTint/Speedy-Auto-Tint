@@ -13,10 +13,10 @@ Static site files for Speedy Auto Tint.
 |-- start-phone-preview.ps1    Local phone preview launcher
 |-- images/                    Site media
 `-- README.md
+/
+
 ```
 
 ## http://YOUR_WIFI_IP:8000/main.html
 ## http://YOUR_WIFI_IP:8000/dashboard.html
-
-```
 
