@@ -18,12 +18,5 @@ Static site files for Speedy Auto Tint.
 ## http://YOUR_WIFI_IP:8000/main.html
 ## http://YOUR_WIFI_IP:8000/dashboard.html
 
-
-```
-
-
-
-
-https://your-site.example/dashboard.html
 ```
 
