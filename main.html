@@ -990,27 +990,21 @@
         .photo-upload-wrap {
             display: flex;
             flex-direction: column;
-            gap: 0.45rem;
+            gap: 0.55rem;
         }
 
-        .photo-upload-input {
-            width: 100%;
+        .photo-choice-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .photo-choice-btn {
+            flex: 1 1 180px;
             padding: 12px 14px;
             border: 1px solid var(--cyan-30);
             background: rgba(0,0,0,0.8);
             color: var(--cyan);
-            font-family: var(--font-body);
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .photo-upload-input::file-selector-button {
-            margin-right: 14px;
-            padding: 10px 16px;
-            border: 1px solid var(--cyan);
-            background: rgba(1,213,218,0.08);
-            color: var(--cyan);
             font-family: var(--font-display);
             font-size: 0.58rem;
             letter-spacing: 0.2em;
@@ -1020,32 +1014,39 @@
             clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
         }
 
-        .photo-upload-input::-webkit-file-upload-button {
-            margin-right: 14px;
-            padding: 10px 16px;
-            border: 1px solid var(--cyan);
-            background: rgba(1,213,218,0.08);
-            color: var(--cyan);
-            font-family: var(--font-display);
-            font-size: 0.58rem;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: var(--transition);
-            clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
-        }
-
-        .photo-upload-input::file-selector-button:hover,
-        .photo-upload-input::-webkit-file-upload-button:hover {
-            background: var(--cyan);
-            color: #000;
-        }
-
-        .photo-upload-input:hover,
-        .photo-upload-input:focus {
+        .photo-choice-btn:hover,
+        .photo-choice-btn:focus {
             border-color: var(--cyan);
+            background: var(--cyan-05);
             box-shadow: 0 0 15px rgba(1,213,218,0.15);
             outline: none;
+        }
+
+        .photo-choice-btn svg {
+            width: 14px;
+            height: 14px;
+            margin-right: 8px;
+            vertical-align: -2px;
+            stroke: currentColor;
+            fill: none;
+        }
+
+        .photo-upload-input {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .photo-upload-status {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.45;
         }
 
         .photo-upload-hint {
@@ -2943,9 +2944,21 @@
 
                         <!-- Vehicle Photo -->
                         <div class="field full photo-upload-wrap">
-                            <label for="vehicle_photo">Vehicle Photo</label>
-                            <input type="file" id="vehicle_photo" name="vehicle_photo" class="photo-upload-input" accept="image/*" capture="environment">
-                            <div class="photo-upload-hint">Optional. Add a clear photo of the vehicle so we can estimate more accurately. You can use the camera or choose an image from your phone or computer.</div>
+                            <label>Vehicle Photo</label>
+                            <div class="photo-choice-row">
+                                <button type="button" class="photo-choice-btn" id="vehicle_photo_camera_btn">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h4l2-2h4l2 2h4v12H4z"></path><circle cx="12" cy="13" r="3.5"></circle></svg>
+                                    Open Camera
+                                </button>
+                                <button type="button" class="photo-choice-btn" id="vehicle_photo_file_btn">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7V5a2 2 0 0 1 2-2h5l3 3v3"></path><path d="M5 9h14v10H5z"></path></svg>
+                                    Choose File
+                                </button>
+                            </div>
+                            <input type="file" id="vehicle_photo_camera" name="vehicle_photo_camera" class="photo-upload-input" accept="image/*" capture="environment">
+                            <input type="file" id="vehicle_photo_file" name="vehicle_photo_file" class="photo-upload-input" accept="image/*">
+                            <div class="photo-upload-status" id="vehicle_photo_status">No photo selected yet.</div>
+                            <div class="photo-upload-hint">Optional. Add a clear photo of the vehicle so we can estimate more accurately. You can take a photo on the spot or choose one from your phone or computer.</div>
                         </div>
 
                         <!-- Body Style -->
@@ -3268,7 +3281,8 @@
             addons.push(field.value);
         });
 
-        const vehiclePhoto = formData.get('vehicle_photo');
+        const vehiclePhotoCamera = formData.get('vehicle_photo_camera');
+        const vehiclePhotoFile = formData.get('vehicle_photo_file');
         const request = {
             id: 'quote_' + Date.now(),
             name: (formData.get('name') || '').trim(),
@@ -3283,7 +3297,7 @@
             body_style: formData.get('body_style') || '',
             service: formData.get('service') || '',
             tint_level: formData.get('tint_level') || '',
-            vehicle_photo_name: vehiclePhoto && vehiclePhoto.name ? vehiclePhoto.name : '',
+            vehicle_photo_name: (vehiclePhotoCamera && vehiclePhotoCamera.name) || (vehiclePhotoFile && vehiclePhotoFile.name) || '',
             addons,
             preferred_date: formData.get('preferred_date') || '',
             notes: (formData.get('notes') || '').trim(),
@@ -3354,6 +3368,36 @@
                 dateInput.focus();
                 dateInput.click();
             }
+        });
+    }
+
+    const vehiclePhotoCameraBtn = document.getElementById('vehicle_photo_camera_btn');
+    const vehiclePhotoFileBtn = document.getElementById('vehicle_photo_file_btn');
+    const vehiclePhotoCamera = document.getElementById('vehicle_photo_camera');
+    const vehiclePhotoFile = document.getElementById('vehicle_photo_file');
+    const vehiclePhotoStatus = document.getElementById('vehicle_photo_status');
+
+    function updateVehiclePhotoStatus() {
+        const file = (vehiclePhotoCamera && vehiclePhotoCamera.files && vehiclePhotoCamera.files[0]) ||
+                     (vehiclePhotoFile && vehiclePhotoFile.files && vehiclePhotoFile.files[0]);
+        if (vehiclePhotoStatus) {
+            vehiclePhotoStatus.textContent = file ? `Selected: ${file.name}` : 'No photo selected yet.';
+        }
+    }
+
+    if (vehiclePhotoCameraBtn && vehiclePhotoCamera) {
+        vehiclePhotoCameraBtn.addEventListener('click', () => vehiclePhotoCamera.click());
+        vehiclePhotoCamera.addEventListener('change', () => {
+            if (vehiclePhotoFile) vehiclePhotoFile.value = '';
+            updateVehiclePhotoStatus();
+        });
+    }
+
+    if (vehiclePhotoFileBtn && vehiclePhotoFile) {
+        vehiclePhotoFileBtn.addEventListener('click', () => vehiclePhotoFile.click());
+        vehiclePhotoFile.addEventListener('change', () => {
+            if (vehiclePhotoCamera) vehiclePhotoCamera.value = '';
+            updateVehiclePhotoStatus();
         });
     }
 
@@ -3501,6 +3545,7 @@
     </script>
 </body>
 </html>
+
 
 
 
