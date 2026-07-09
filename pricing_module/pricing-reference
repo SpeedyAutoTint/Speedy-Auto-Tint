@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>Speedy Auto Tint | Employee Pricing Reference</title>
+
+<link rel="stylesheet" href="css/tron.css">
+<link rel="stylesheet" href="css/print.css" media="print">
+
+<script defer src="js/pricing-data.js"></script>
+<script defer src="js/pricing.js"></script>
+
+</head>
+
+<body>
+
+<div class="background-grid"></div>
+<div class="background-glow glow1"></div>
+<div class="background-glow glow2"></div>
+
+<header class="topbar">
+
+<div class="logoArea">
+
+<div class="logoCircle">
+
+⚡
+
+</div>
+
+<div>
+
+<h1>Speedy Auto Tint</h1>
+
+<p>Employee Pricing Reference</p>
+
+</div>
+
+</div>
+
+<nav>
+
+<button class="navButton active" data-section="tint">
+
+Window Tint
+
+</button>
+
+<button class="navButton" data-section="removal">
+
+Tint Removal
+
+</button>
+
+<button class="navButton" data-section="wrap">
+
+Vehicle Wraps
+
+</button>
+
+<button class="navButton" data-section="reference">
+
+Reference
+
+</button>
+
+<button id="printButton">
+
+🖨 Print
+
+</button>
+
+</nav>
+
+</header>
+
+<section class="hero">
+
+<h2>
+
+Pricing Center
+
+</h2>
+
+<p>
+
+Quick employee reference for quoting customers.
+
+Always verify pricing before collecting deposits.
+
+</p>
+
+<div class="searchContainer">
+
+<input
+
+id="search"
+
+type="text"
+
+placeholder="Search services...">
+
+</div>
+
+</section>
+
+<main id="pricingContent">
+
+<section class="category" id="tint">
+
+<div class="sectionTitle">
+
+<h2>
+
+Window Tint
+
+</h2>
+
+</div>
+
+<div class="cardGrid">
+
+<div class="card">
+
+<h3>
+
+Individual Windows
+
+</h3>
+
+<table>
+
+<tbody>
+
+<tr>
+
+<td>Windshield Sun Strip</td>
+
+<td>$40</td>
+
+</tr>
+
+<tr>
+
+<td>Full Windshield</td>
+
+<td>$100</td>
+
+</tr>
+
+<tr>
+
+<td>Single Window</td>
+
+<td>$50</td>
+
+</tr>
+
+<tr>
+
+<td>Two Front Windows</td>
+
+<td>$100</td>
+
+</tr>
+
+<tr>
+
+<td>Sunroof</td>
+
+<td>$50-$75</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+<div class="card tintCard">
+
+<div class="tintPercent">
+
+35%
+
+</div>
+
+<div class="price">
+
+$160-$180
+
+</div>
+
+<div class="badge">
+
+LEGAL
+
+</div>
+
+</div>
+
+<div class="card tintCard popular">
+
+<div class="tintPercent">
+
+20%
+
+</div>
+
+<div class="price">
+
+$180-$240
+
+</div>
+
+<div class="badge">
+
+MOST POPULAR
+
+</div>
+
+</div>
+
+<div class="card tintCard">
+
+<div class="tintPercent">
+
+5%
+
+</div>
+
+<div class="price">
+
+$280
+
+</div>
+
+<div class="badge">
+
+LIMO
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="category" id="removal">
+
+<div class="sectionTitle">
+
+<h2>
+
+Tint Removal
+
+</h2>
+
+</div>
+
+<div class="card">
+
+<table>
+
+<tbody>
+
+<tr>
+
+<td>Single Window</td>
+
+<td>$40</td>
+
+</tr>
+
+<tr>
+
+<td>Complete Vehicle</td>
+
+<td>$160</td>
+
+</tr>
+
+<tr>
+
+<td>Front Windshield</td>
+
+<td>Custom Quote</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+<div class="notes">
+
+<h3>
+
+Employee Notes
+
+</h3>
+
+<ul>
+
+<li>Book removal jobs on sunny days whenever possible.</li>
+
+<li>Allow at least three hours.</li>
+
+<li>Inspect rear defroster lines.</li>
+
+<li>Older film may require additional labor.</li>
+
+</ul>
+
+</div>
+
+</section>
+
+<section class="category" id="wrap">
+
+<div class="sectionTitle">
+
+<h2>
+
+Vehicle Wrap Pricing
+
+</h2>
+
+</div>
+
+<div class="wrapGrid">
+
+<div class="wrapCard">
+
+<h3>Hood</h3>
+
+<div>$250</div>
+
+</div>
+
+<div class="wrapCard">
+
+<h3>Roof</h3>
+
+<div>$250</div>
+
+</div>
+
+<div class="wrapCard">
+
+<h3>Trunk</h3>
+
+<div>$200</div>
+
+</div>
+
+<div class="wrapCard">
+
+<h3>Mirrors</h3>
+
+<div>$80</div>
+
+</div>
+
+<div class="wrapCard">
+
+<h3>Spoiler</h3>
+
+<div>$80</div>
+
+</div>
+
+<div class="wrapCard">
+
+<h3>Chrome Delete</h3>
+
+<div>$150+</div>
+
+</div>
+
+<div class="wrapCard">
+
+<h3>Accent Package</h3>
+
+<div>$350</div>
+
+</div>
+
+<div class="wrapCard">
+
+<h3>Racing Stripes</h3>
+
+<div>$250</div>
+
+</div>
+
+<div class="wrapCard">
+
+<h3>Quarter Wrap</h3>
+
+<div>$900</div>
+
+</div>
+
+<div class="wrapCard">
+
+<h3>Half Wrap</h3>
+
+<div>$1300</div>
+
+</div>
+
+<div class="wrapCard">
+
+<h3>Coupe</h3>
+
+<div>$2400</div>
+
+</div>
+
+<div class="wrapCard">
+
+<h3>Sedan</h3>
+
+<div>$2600</div>
+
+</div>
+
+<div class="wrapCard">
+
+<h3>Small SUV</h3>
+
+<div>$2900</div>
+
+</div>
+
+<div class="wrapCard">
+
+<h3>Mid SUV</h3>
+
+<div>$3200</div>
+
+</div>
+
+<div class="wrapCard">
+
+<h3>Full SUV</h3>
+
+<div>$3500</div>
+
+</div>
+
+<div class="wrapCard">
+
+<h3>Pickup</h3>
+
+<div>$3300</div>
+
+</div>
+
+<div class="wrapCard">
+
+<h3>Commercial Van</h3>
+
+<div>$3800</div>
+
+</div>
+
+<div class="wrapCard highlight">
+
+<h3>
+
+Bring Your Own Wrap
+
+</h3>
+
+<div>
+
+______________
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="category" id="reference">
+
+<div class="sectionTitle">
+
+<h2>
+
+Quick Reference
+
+</h2>
+
+</div>
+
+<div class="referenceGrid">
+
+<div class="card">
+
+<h3>
+
+Average Install Times
+
+</h3>
+
+<table>
+
+<tr>
+
+<td>Two Front Windows</td>
+
+<td>45-60 min</td>
+
+</tr>
+
+<tr>
+
+<td>Full Tint</td>
+
+<td>1.5-2.5 hrs</td>
+
+</tr>
+
+<tr>
+
+<td>Removal</td>
+
+<td>3-4 hrs</td>
+
+</tr>
+
+<tr>
+
+<td>Hood Wrap</td>
+
+<td>2 hrs</td>
+
+</tr>
+
+<tr>
+
+<td>Roof Wrap</td>
+
+<td>2-3 hrs</td>
+
+</tr>
+
+<tr>
+
+<td>Full Vehicle Wrap</td>
+
+<td>2-5 Days</td>
+
+</tr>
+
+</table>
+
+</div>
+
+<div class="card">
+
+<h3>
+
+Customer Checklist
+
+</h3>
+
+<ul>
+
+<li>Inspect vehicle.</li>
+
+<li>Photograph existing damage.</li>
+
+<li>Verify phone number.</li>
+
+<li>Confirm tint shade.</li>
+
+<li>Explain curing period.</li>
+
+<li>Collect wrap deposit.</li>
+
+<li>Schedule pickup.</li>
+
+</ul>
+
+</div>
+
+</div>
+
+</section>
+
+</main>
+
+<footer>
+
+<div>
+
+Speedy Auto Tint Employee Dashboard
+
+</div>
+
+<div>
+
+Pricing Center v1.0
+
+</div>
+
+</footer>
+
+</body>
+
+</html>
