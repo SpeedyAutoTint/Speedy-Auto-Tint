@@ -950,6 +950,110 @@
             min-height: 100px;
         }
 
+        .date-field-wrap {
+            display: flex;
+            align-items: stretch;
+            gap: 8px;
+        }
+
+        .date-field-wrap input {
+            flex: 1 1 auto;
+        }
+
+        .date-picker-btn {
+            flex: 0 0 auto;
+            width: 48px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--cyan-30);
+            background: rgba(0,0,0,0.8);
+            color: var(--cyan);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .date-picker-btn:hover {
+            border-color: var(--cyan);
+            background: var(--cyan-05);
+            box-shadow: 0 0 15px rgba(1,213,218,0.15);
+        }
+
+        .date-picker-btn svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            fill: none;
+        }
+
+        .photo-upload-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+        }
+
+        .photo-upload-input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--cyan-30);
+            background: rgba(0,0,0,0.8);
+            color: var(--cyan);
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .photo-upload-input::file-selector-button {
+            margin-right: 14px;
+            padding: 10px 16px;
+            border: 1px solid var(--cyan);
+            background: rgba(1,213,218,0.08);
+            color: var(--cyan);
+            font-family: var(--font-display);
+            font-size: 0.58rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: var(--transition);
+            clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+        }
+
+        .photo-upload-input::-webkit-file-upload-button {
+            margin-right: 14px;
+            padding: 10px 16px;
+            border: 1px solid var(--cyan);
+            background: rgba(1,213,218,0.08);
+            color: var(--cyan);
+            font-family: var(--font-display);
+            font-size: 0.58rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: var(--transition);
+            clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+        }
+
+        .photo-upload-input::file-selector-button:hover,
+        .photo-upload-input::-webkit-file-upload-button:hover {
+            background: var(--cyan);
+            color: #000;
+        }
+
+        .photo-upload-input:hover,
+        .photo-upload-input:focus {
+            border-color: var(--cyan);
+            box-shadow: 0 0 15px rgba(1,213,218,0.15);
+            outline: none;
+        }
+
+        .photo-upload-hint {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            line-height: 1.45;
+        }
+
         .consent-field {
             flex-direction: row;
             align-items: flex-start;
@@ -2720,6 +2824,7 @@
                     id="quote-form"
                     novalidate
                     autocomplete="on"
+                    enctype="multipart/form-data"
                 >
 
                     <div class="form-grid">
@@ -2780,33 +2885,67 @@
                         <!-- Preferred Date -->
                         <div class="field">
                             <label for="preferred_date">Preferred Date</label>
-                            <input type="date" id="preferred_date" name="preferred_date">
-                        </div>
-
-                        <!-- Vehicle: Year -->
-                        <div class="field">
-                            <label for="year">Vehicle Year <span style="color:var(--red)">*</span></label>
-                            <input type="text" id="year" name="year"
-                                   placeholder="2022"
-                                   pattern="\d{4}"
-                                   maxlength="4"
-                                   required>
+                            <div class="date-field-wrap">
+                                <input type="date" id="preferred_date" name="preferred_date">
+                                <button type="button" class="date-picker-btn" id="preferred_date_btn" aria-label="Open date picker">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                                        <rect x="3" y="5" width="18" height="16" rx="1.5"></rect>
+                                        <path d="M8 3v4M16 3v4M3 10h18"></path>
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
 
                         <!-- Vehicle: Make -->
                         <div class="field">
                             <label for="make">Make <span style="color:var(--red)">*</span></label>
-                            <input type="text" id="make" name="make"
-                                   placeholder="Toyota"
-                                   required autocomplete="off">
+                            <select id="make" name="make" required>
+                                <option value="" disabled selected>Select a make...</option>
+                                <optgroup label="Domestic">
+                                    <option value="Ford">Ford</option>
+                                    <option value="Chevrolet">Chevrolet</option>
+                                    <option value="GMC">GMC</option>
+                                    <option value="Ram">Ram</option>
+                                    <option value="Jeep">Jeep</option>
+                                    <option value="Dodge">Dodge</option>
+                                    <option value="Cadillac">Cadillac</option>
+                                    <option value="Buick">Buick</option>
+                                    <option value="Chrysler">Chrysler</option>
+                                    <option value="Tesla">Tesla</option>
+                                </optgroup>
+                                <optgroup label="Euro">
+                                    <option value="BMW">BMW</option>
+                                    <option value="Mercedes-Benz">Mercedes-Benz</option>
+                                    <option value="Audi">Audi</option>
+                                    <option value="Volkswagen">Volkswagen</option>
+                                    <option value="Volvo">Volvo</option>
+                                    <option value="Porsche">Porsche</option>
+                                    <option value="MINI">MINI</option>
+                                    <option value="Land Rover">Land Rover</option>
+                                    <option value="Jaguar">Jaguar</option>
+                                </optgroup>
+                            </select>
                         </div>
 
                         <!-- Vehicle: Model -->
                         <div class="field">
                             <label for="model">Model <span style="color:var(--red)">*</span></label>
-                            <input type="text" id="model" name="model"
-                                   placeholder="Camry"
-                                   required autocomplete="off">
+                            <select id="model" name="model" required disabled>
+                                <option value="" selected>Select a make first...</option>
+                            </select>
+                        </div>
+
+                        <!-- Vehicle: Year -->
+                        <div class="field">
+                            <label for="year">Vehicle Year <span style="color:var(--red)">*</span></label>
+                            <select id="year" name="year" required></select>
+                        </div>
+
+                        <!-- Vehicle Photo -->
+                        <div class="field full photo-upload-wrap">
+                            <label for="vehicle_photo">Vehicle Photo</label>
+                            <input type="file" id="vehicle_photo" name="vehicle_photo" class="photo-upload-input" accept="image/*" capture="environment">
+                            <div class="photo-upload-hint">Optional. Add a clear photo of the vehicle so we can estimate more accurately. You can use the camera or choose an image from your phone or computer.</div>
                         </div>
 
                         <!-- Body Style -->
@@ -3129,6 +3268,7 @@
             addons.push(field.value);
         });
 
+        const vehiclePhoto = formData.get('vehicle_photo');
         const request = {
             id: 'quote_' + Date.now(),
             name: (formData.get('name') || '').trim(),
@@ -3143,6 +3283,7 @@
             body_style: formData.get('body_style') || '',
             service: formData.get('service') || '',
             tint_level: formData.get('tint_level') || '',
+            vehicle_photo_name: vehiclePhoto && vehiclePhoto.name ? vehiclePhoto.name : '',
             addons,
             preferred_date: formData.get('preferred_date') || '',
             notes: (formData.get('notes') || '').trim(),
@@ -3203,6 +3344,90 @@
     const today = new Date().toISOString().split('T')[0];
     const dateInput = document.getElementById('preferred_date');
     if (dateInput) dateInput.min = today;
+
+    const datePickerBtn = document.getElementById('preferred_date_btn');
+    if (dateInput && datePickerBtn) {
+        datePickerBtn.addEventListener('click', () => {
+            if (typeof dateInput.showPicker === 'function') {
+                dateInput.showPicker();
+            } else {
+                dateInput.focus();
+                dateInput.click();
+            }
+        });
+    }
+
+    const makeSelect = document.getElementById('make');
+    const modelSelect = document.getElementById('model');
+    const yearSelect  = document.getElementById('year');
+
+    const popularVehicles = {
+        'Ford': ['F-150', 'Maverick', 'Explorer', 'Escape', 'Mustang', 'Bronco'],
+        'Chevrolet': ['Silverado 1500', 'Equinox', 'Tahoe', 'Traverse', 'Camaro', 'Malibu'],
+        'GMC': ['Sierra 1500', 'Acadia', 'Yukon', 'Terrain'],
+        'Ram': ['1500', '2500', '3500'],
+        'Jeep': ['Wrangler', 'Grand Cherokee', 'Compass', 'Cherokee'],
+        'Dodge': ['Charger', 'Challenger', 'Durango', 'Hornet'],
+        'Cadillac': ['Escalade', 'XT5', 'XT4', 'CT5'],
+        'Buick': ['Enclave', 'Encore GX', 'Envision'],
+        'Chrysler': ['Pacifica', '300'],
+        'Tesla': ['Model 3', 'Model Y', 'Model S', 'Model X', 'Cybertruck'],
+        'BMW': ['3 Series', '4 Series', '5 Series', 'X3', 'X5', '2 Series'],
+        'Mercedes-Benz': ['C-Class', 'E-Class', 'GLC', 'GLE', 'Sprinter'],
+        'Audi': ['A3', 'A4', 'A6', 'Q5', 'Q7'],
+        'Volkswagen': ['Jetta', 'Golf GTI', 'Tiguan', 'Atlas'],
+        'Volvo': ['XC40', 'XC60', 'XC90'],
+        'Porsche': ['Macan', 'Cayenne', '911'],
+        'MINI': ['Cooper', 'Countryman'],
+        'Land Rover': ['Range Rover', 'Defender', 'Discovery'],
+        'Jaguar': ['F-PACE', 'XE', 'XF']
+    };
+
+    function populateYearOptions() {
+        if (!yearSelect) return;
+        const currentYear = new Date().getFullYear();
+        yearSelect.innerHTML = '';
+        const placeholder = document.createElement('option');
+        placeholder.value = '';
+        placeholder.disabled = true;
+        placeholder.selected = true;
+        placeholder.textContent = 'Select year...';
+        yearSelect.appendChild(placeholder);
+        for (let year = currentYear; year >= 1985; year--) {
+            const option = document.createElement('option');
+            option.value = String(year);
+            option.textContent = String(year);
+            yearSelect.appendChild(option);
+        }
+    }
+
+    function populateModelOptions(makeValue) {
+        if (!modelSelect) return;
+        const models = popularVehicles[makeValue] || [];
+        modelSelect.innerHTML = '';
+        const placeholder = document.createElement('option');
+        placeholder.value = '';
+        placeholder.disabled = true;
+        placeholder.selected = true;
+        placeholder.textContent = makeValue ? 'Select a model...' : 'Select a make first...';
+        modelSelect.appendChild(placeholder);
+        modelSelect.disabled = !models.length;
+        models.forEach(model => {
+            const option = document.createElement('option');
+            option.value = model;
+            option.textContent = model;
+            modelSelect.appendChild(option);
+        });
+        if (modelSelect.disabled) modelSelect.value = '';
+    }
+
+    if (makeSelect && modelSelect) {
+        makeSelect.addEventListener('change', () => {
+            populateModelOptions(makeSelect.value);
+        });
+        populateModelOptions(makeSelect.value);
+    }
+    populateYearOptions();
 
     /* ── Tint reference panel ── */
     const serviceSelect    = document.getElementById('service');
@@ -3276,6 +3501,11 @@
     </script>
 </body>
 </html>
+
+
+
+
+
 
 
 
