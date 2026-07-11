@@ -1,0 +1,92 @@
+{
+  "meta": {
+    "company": "Speedy Auto Tint",
+    "currency": "USD",
+    "version": "2.0",
+    "lastUpdated": "2026-07-09",
+    "notes": "This file is the single source of truth for pricing. Update values here and the employee Pricing Center, the customer dashboard quote builder, the kiosk, and any future POS will all reflect the change automatically."
+  },
+
+  "services": [
+    { "id": "tint-sunstrip",     "category": "Window Tint", "subcategory": "Individual Windows", "name": "Windshield Sun Strip", "price": 40 },
+    { "id": "tint-windshield",   "category": "Window Tint", "subcategory": "Individual Windows", "name": "Full Windshield",       "price": 100 },
+    { "id": "tint-single",       "category": "Window Tint", "subcategory": "Individual Windows", "name": "Single Window",         "price": 50 },
+    { "id": "tint-front-pair",   "category": "Window Tint", "subcategory": "Individual Windows", "name": "Two Front Windows",     "price": 100 },
+    { "id": "tint-sunroof",      "category": "Window Tint", "subcategory": "Individual Windows", "name": "Sunroof",               "min": 50, "max": 75 },
+
+    { "id": "tint-35",  "category": "Window Tint", "subcategory": "Full Vehicle Tint", "name": "35%", "shade": "35%", "min": 160, "max": 180, "badge": "LEGAL",         "popular": false },
+    { "id": "tint-20",  "category": "Window Tint", "subcategory": "Full Vehicle Tint", "name": "20%", "shade": "20%", "min": 180, "max": 240, "badge": "MOST POPULAR", "popular": true },
+    { "id": "tint-05",  "category": "Window Tint", "subcategory": "Full Vehicle Tint", "name": "5%",  "shade": "5%",  "price": 280,           "badge": "LIMO",          "popular": false },
+
+    { "id": "removal-single",     "category": "Tint Removal", "name": "Single Window",     "price": 40 },
+    { "id": "removal-complete",   "category": "Tint Removal", "name": "Complete Vehicle",   "price": 160 },
+    { "id": "removal-windshield", "category": "Tint Removal", "name": "Front Windshield",   "price": null, "custom": true },
+
+    { "id": "wrap-hood",    "category": "Vehicle Wrap", "subcategory": "Panels", "name": "Hood",    "price": 250 },
+    { "id": "wrap-roof",    "category": "Vehicle Wrap", "subcategory": "Panels", "name": "Roof",    "price": 250 },
+    { "id": "wrap-trunk",   "category": "Vehicle Wrap", "subcategory": "Panels", "name": "Trunk",   "price": 200 },
+    { "id": "wrap-mirrors", "category": "Vehicle Wrap", "subcategory": "Panels", "name": "Mirrors", "price": 80 },
+    { "id": "wrap-spoiler", "category": "Vehicle Wrap", "subcategory": "Panels", "name": "Spoiler", "price": 80 },
+    { "id": "chrome-delete","category": "Chrome Delete","subcategory": "Panels", "name": "Chrome Delete", "price": 150, "plusMinimum": true },
+
+    { "id": "wrap-accent",  "category": "Vehicle Wrap", "subcategory": "Partial", "name": "Accent Package",  "price": 350 },
+    { "id": "wrap-stripes", "category": "Vehicle Wrap", "subcategory": "Partial", "name": "Racing Stripes",  "price": 250 },
+    { "id": "wrap-quarter", "category": "Vehicle Wrap", "subcategory": "Partial", "name": "Quarter Wrap",    "price": 900 },
+    { "id": "wrap-half",    "category": "Vehicle Wrap", "subcategory": "Partial", "name": "Half Wrap",       "price": 1300 },
+
+    { "id": "wrap-coupe",      "category": "Vehicle Wrap", "subcategory": "Full Vehicle", "name": "Coupe",          "price": 2400 },
+    { "id": "wrap-sedan",      "category": "Vehicle Wrap", "subcategory": "Full Vehicle", "name": "Sedan",          "price": 2600 },
+    { "id": "wrap-small-suv",  "category": "Vehicle Wrap", "subcategory": "Full Vehicle", "name": "Small SUV",      "price": 2900, "aliases": ["Small SUV"] },
+    { "id": "wrap-mid-suv",    "category": "Vehicle Wrap", "subcategory": "Full Vehicle", "name": "Mid SUV",        "price": 3200, "aliases": ["Mid Size SUV"] },
+    { "id": "wrap-full-suv",   "category": "Vehicle Wrap", "subcategory": "Full Vehicle", "name": "Full SUV",       "price": 3500, "aliases": ["Full Size SUV"] },
+    { "id": "wrap-pickup",     "category": "Vehicle Wrap", "subcategory": "Full Vehicle", "name": "Pickup",         "price": 3300, "aliases": ["Pickup Truck"] },
+    { "id": "wrap-commercial", "category": "Vehicle Wrap", "subcategory": "Full Vehicle", "name": "Commercial Van", "price": 3800 },
+
+    { "id": "wrap-fleet-lettering", "category": "Vinyl Graphics", "subcategory": "Fleet", "name": "Door Lettering",  "price": 150 },
+    { "id": "wrap-fleet-logo",      "category": "Vinyl Graphics", "subcategory": "Fleet", "name": "Company Logo",    "price": 200 },
+    { "id": "wrap-fleet-spot",      "category": "Vinyl Graphics", "subcategory": "Fleet", "name": "Spot Graphics",   "price": 300 },
+    { "id": "wrap-fleet-full",      "category": "Vinyl Graphics", "subcategory": "Fleet", "name": "Commercial Wrap", "price": null, "custom": true },
+
+    { "id": "wrap-byo", "category": "Vehicle Wrap", "subcategory": "Customer Material", "name": "Bring Your Own Wrap", "price": null, "custom": true,
+      "notes": [
+        "No warranty on customer supplied material.",
+        "Inspect material before scheduling.",
+        "Recommend premium cast vinyl.",
+        "Additional labor may apply."
+      ]
+    },
+
+    { "id": "ppf-partial", "category": "Paint Protection Film", "subcategory": "PPF", "name": "Partial Front PPF", "price": null, "custom": true, "note": "PENDING — add real pricing" },
+    { "id": "ppf-full",    "category": "Paint Protection Film", "subcategory": "PPF", "name": "Full Vehicle PPF",  "price": null, "custom": true, "note": "PENDING — add real pricing" }
+  ],
+
+  "laborTimes": [
+    { "service": "Two Front Windows",     "time": "45-60 Minutes" },
+    { "service": "Full Vehicle Tint",     "time": "1.5-2.5 Hours" },
+    { "service": "Tint Removal",          "time": "3-4 Hours" },
+    { "service": "Hood Wrap",             "time": "2 Hours" },
+    { "service": "Roof Wrap",             "time": "2-3 Hours" },
+    { "service": "Complete Vehicle Wrap", "time": "2-5 Days" }
+  ],
+
+  "checklist": [
+    "Inspect vehicle for damage",
+    "Photograph existing damage",
+    "Verify customer phone number",
+    "Confirm tint percentage",
+    "Explain curing period",
+    "Collect deposits for wrap jobs",
+    "Verify pickup date",
+    "Walk around vehicle before delivery"
+  ],
+
+  "notes": [
+    "Always verify state tint laws.",
+    "Match factory privacy glass when requested.",
+    "Inspect rear defroster lines before removal.",
+    "Book tint removal jobs on sunny days.",
+    "Wrap pricing assumes normal body condition.",
+    "Heavily damaged paint requires customer acknowledgment.",
+    "Ceramic film should be recommended whenever possible."
+  ]
+}

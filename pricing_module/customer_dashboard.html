@@ -1,0 +1,1494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- PRIVACY: Dashboard is not linked from public site. Access via direct URL only. -->
+    <meta name="robots" content="noindex, nofollow">
+    <title>Customer Dashboard — Speedy Auto Tint</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="favicon.png" sizes="64x64">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="apple-touch-icon" href="favicon.png">
+    <!-- Centralized pricing: edit pricing-data/pricing.json to change prices everywhere -->
+    <script defer src="pricing-data/pricing-service.js"></script>
+    <script defer src="pricing-data/app-data-store.js"></script>
+    <style>
+        :root {
+            --cyan:      #01D5DA;
+            --cyan-60:   rgba(1, 213, 218, 0.6);
+            --cyan-30:   rgba(1, 213, 218, 0.3);
+            --cyan-10:   rgba(1, 213, 218, 0.1);
+            --cyan-05:   rgba(1, 213, 218, 0.05);
+            --red:       #e05555;
+            --red-30:    rgba(224, 85, 85, 0.3);
+            --amber:     #f0ad4e;
+            --amber-30:  rgba(240, 173, 78, 0.3);
+            --green:     #4ecf8c;
+            --green-30:  rgba(78, 207, 140, 0.3);
+            --bg:        #000;
+            --text-muted: rgba(1, 213, 218, 0.55);
+            --font-display: 'Orbitron', monospace;
+            --font-body:    'Rajdhani', monospace;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--cyan);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed; inset: 0;
+            background-image:
+                linear-gradient(0deg, transparent 0px, rgba(1,213,218,0.03) 1px, transparent 2px),
+                linear-gradient(90deg, transparent 0px, rgba(1,213,218,0.03) 1px, transparent 2px);
+            background-size: 60px 60px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+            animation: scan 10s linear infinite;
+            pointer-events: none;
+            z-index: 999;
+            opacity: 0.35;
+        }
+
+        @keyframes scan { 0%{ transform: translateY(0); } 100%{ transform: translateY(100vh); } }
+        @keyframes cw   { to{ transform: rotate(360deg); } }
+        @keyframes ccw  { to{ transform: rotate(-360deg); } }
+        @keyframes fadeIn { from{ opacity:0; } to{ opacity:1; } }
+        @keyframes glow {
+            0%,100%{ text-shadow: 0 0 10px var(--cyan-30); }
+            50%    { text-shadow: 0 0 20px var(--cyan-60), 0 0 35px var(--cyan-30); }
+        }
+
+        /* ══════════ HEADER ══════════ */
+        header {
+            position: sticky; top: 0;
+            background: rgba(0,0,0,0.95);
+            border-bottom: 1px solid var(--cyan-30);
+            box-shadow: 0 0 30px rgba(1,213,218,0.08);
+            backdrop-filter: blur(12px);
+            z-index: 100;
+        }
+
+        .header-inner {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0 clamp(16px,3vw,36px);
+            height: 68px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .logo-group {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .logo-group img {
+            height: 38px; width: auto;
+            filter: drop-shadow(0 0 8px var(--cyan-60));
+        }
+
+        .logo-text {
+            font-family: var(--font-display);
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            color: var(--cyan);
+            text-shadow: 0 0 12px var(--cyan-30);
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        .logo-sub-text {
+            display: block;
+            font-size: 0.5rem;
+            letter-spacing: 0.3em;
+            opacity: 0.5;
+            font-weight: 400;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .btn {
+            font-family: var(--font-display);
+            font-size: 0.6rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            padding: 9px 20px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            transition: all 0.25s ease;
+            clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+        }
+
+        .btn-ghost {
+            color: var(--cyan);
+            border: 1px solid var(--cyan-30);
+            box-shadow: 0 0 10px rgba(1,213,218,0.06);
+        }
+
+        .btn-ghost:hover {
+            border-color: var(--cyan);
+            background: var(--cyan-10);
+            box-shadow: 0 0 18px var(--cyan-30);
+        }
+
+        a.btn {
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        /* ══════════ LOADING OVERLAY ══════════ */
+        .loading-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.94);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            animation: fadeIn 0.2s ease;
+            backdrop-filter: blur(4px);
+        }
+
+        .loading-overlay.active { display: flex; }
+
+        .loading-inner { text-align: center; }
+
+        .spin-ring {
+            position: relative;
+            width: 56px; height: 56px;
+            margin: 0 auto;
+        }
+
+        .spin-ring div {
+            position: absolute; inset: 0;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            border-top-color: var(--cyan);
+            filter: drop-shadow(0 0 5px var(--cyan));
+        }
+
+        .spin-ring div:nth-child(1) { animation: cw 1.4s linear infinite; }
+        .spin-ring div:nth-child(2) { inset: 8px; border-top-color: var(--cyan-60); animation: ccw 0.9s linear infinite; }
+        .spin-ring div:nth-child(3) { inset: 18px; border-top-color: var(--cyan-30); animation: cw 0.6s linear infinite; }
+
+        .loading-text {
+            font-family: var(--font-display);
+            font-size: 0.6rem;
+            letter-spacing: 0.35em;
+            color: var(--cyan);
+            margin-top: 1.5rem;
+            text-shadow: 0 0 8px var(--cyan);
+        }
+
+        /* ══════════ LAYOUT ══════════ */
+        main {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: clamp(24px,3vw,40px) clamp(16px,3vw,36px);
+            position: relative;
+            z-index: 2;
+        }
+
+        .page-title {
+            font-family: var(--font-display);
+            font-size: clamp(1rem, 2.5vw, 1.5rem);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--cyan);
+            text-shadow: 0 0 15px var(--cyan-30);
+            margin-bottom: 0.25rem;
+        }
+
+        .page-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+        }
+
+        /* ══════════ STATS GRID ══════════ */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1px;
+            background: var(--cyan-10);
+            border: 1px solid var(--cyan-10);
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            background: var(--bg);
+            padding: 1.5rem;
+            text-align: center;
+            transition: background 0.25s ease;
+            position: relative;
+        }
+
+        .stat-card:hover { background: var(--cyan-05); }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+        }
+
+        .stat-card.c-total::before   { background: var(--cyan); box-shadow: 0 0 8px var(--cyan); }
+        .stat-card.c-new::before     { background: var(--amber); box-shadow: 0 0 8px var(--amber); }
+        .stat-card.c-pending::before { background: var(--cyan-60); box-shadow: 0 0 8px var(--cyan-60); }
+        .stat-card.c-done::before    { background: var(--green); box-shadow: 0 0 8px var(--green); }
+
+        .stat-number {
+            font-family: var(--font-display);
+            font-size: 2.2rem;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 0.4rem;
+        }
+
+        .stat-card.c-total   .stat-number { color: var(--cyan);   text-shadow: 0 0 12px var(--cyan-30); }
+        .stat-card.c-new     .stat-number { color: var(--amber);  text-shadow: 0 0 12px var(--amber-30); }
+        .stat-card.c-pending .stat-number { color: var(--cyan);   text-shadow: 0 0 12px var(--cyan-30); }
+        .stat-card.c-done    .stat-number { color: var(--green);  text-shadow: 0 0 12px var(--green-30); }
+
+        .stat-label {
+            font-size: 0.65rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        /* ══════════ ALERTS ══════════ */
+        .alerts-section { margin-bottom: 2rem; }
+
+        .section-label {
+            font-family: var(--font-display);
+            font-size: 0.6rem;
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .alert-card {
+            background: rgba(0,0,0,0.8);
+            border: 1px solid var(--red-30);
+            border-left: 3px solid var(--red);
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.6rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            box-shadow: 0 0 15px rgba(224,85,85,0.08);
+        }
+
+        .alert-dot {
+            width: 8px; height: 8px;
+            background: var(--red);
+            border-radius: 50%;
+            box-shadow: 0 0 6px var(--red);
+            flex-shrink: 0;
+            margin-top: 4px;
+        }
+
+        .alert-title {
+            font-family: var(--font-display);
+            font-size: 0.65rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--red);
+            margin-bottom: 2px;
+        }
+
+        .alert-body { font-size: 0.9rem; color: rgba(224,85,85,0.8); }
+        .alert-body strong { color: var(--red); }
+
+        .no-alerts {
+            padding: 0.75rem 1.25rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            border: 1px solid var(--cyan-10);
+            border-left: 3px solid var(--green);
+            background: rgba(0,0,0,0.6);
+        }
+
+        /* ══════════ TABLE ══════════ */
+        .table-section-title {
+            font-family: var(--font-display);
+            font-size: 0.6rem;
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            background: rgba(0,0,0,0.8);
+            border: 1px solid var(--cyan-10);
+            box-shadow: 0 0 30px rgba(1,213,218,0.04);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 900px;
+        }
+
+        thead tr {
+            background: var(--cyan-05);
+            border-bottom: 1px solid var(--cyan-30);
+        }
+
+        th {
+            font-family: var(--font-display);
+            font-size: 0.55rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            padding: 14px 16px;
+            text-align: left;
+            white-space: nowrap;
+            font-weight: 500;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid rgba(1,213,218,0.06);
+            transition: background 0.2s ease;
+        }
+
+        tbody tr:hover { background: var(--cyan-05); }
+        tbody tr:last-child { border-bottom: none; }
+
+        td {
+            padding: 14px 16px;
+            font-size: 0.9rem;
+            color: var(--cyan);
+            vertical-align: middle;
+        }
+
+        td a {
+            color: var(--cyan);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s ease;
+        }
+
+        td a:hover { border-bottom-color: var(--cyan); }
+
+        .meta-text {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: block;
+        }
+
+        /* Status badges */
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            font-family: var(--font-display);
+            font-size: 0.5rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            border: 1px solid;
+            white-space: nowrap;
+        }
+
+        .badge-new      { color: var(--amber);  border-color: var(--amber-30);  background: rgba(240,173,78,0.08); }
+        .badge-contacted{ color: var(--green);  border-color: var(--green-30);  background: rgba(78,207,140,0.08); }
+        .badge-scheduled{ color: var(--cyan);   border-color: var(--cyan-30);   background: var(--cyan-05); }
+        .badge-completed{ color: var(--text-muted); border-color: rgba(1,213,218,0.12); background: transparent; }
+
+        /* Actions */
+        .status-select {
+            background: rgba(0,0,0,0.8);
+            color: var(--cyan);
+            border: 1px solid var(--cyan-30);
+            padding: 7px 28px 7px 10px;
+            font-family: var(--font-display);
+            font-size: 0.55rem;
+            letter-spacing: 0.15em;
+            cursor: pointer;
+            text-transform: uppercase;
+            outline: none;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2301D5DA' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            transition: all 0.2s ease;
+        }
+
+        .status-select:focus, .status-select:hover {
+            border-color: var(--cyan);
+            box-shadow: 0 0 10px var(--cyan-30);
+        }
+
+        .status-select option { background: #000; }
+
+        .delete-btn {
+            padding: 7px 14px;
+            font-family: var(--font-display);
+            font-size: 0.55rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            cursor: pointer;
+            background: transparent;
+            color: var(--red);
+            border: 1px solid var(--red-30);
+            transition: all 0.2s ease;
+        }
+
+        .delete-btn:hover {
+            background: rgba(224,85,85,0.1);
+            border-color: var(--red);
+            box-shadow: 0 0 12px var(--red-30);
+        }
+
+        /* Empty state */
+        .empty-state {
+            padding: 60px 20px;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .empty-state p { font-size: 0.9rem; letter-spacing: 0.1em; }
+
+        /* ══════════ MODAL ══════════ */
+        .modal-backdrop {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.92);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9000;
+            backdrop-filter: blur(6px);
+        }
+
+        .modal-backdrop.active { display: flex; }
+
+        .modal {
+            background: rgba(0,0,0,0.98);
+            border: 1px solid var(--cyan-30);
+            padding: 2.5rem;
+            text-align: center;
+            max-width: 380px;
+            width: calc(100% - 40px);
+            box-shadow: 0 0 60px rgba(1,213,218,0.1);
+            position: relative;
+        }
+
+        .modal::before {
+            content: '';
+            position: absolute;
+            top: -1px; left: -1px;
+            width: 20px; height: 20px;
+            border-top: 2px solid var(--cyan);
+            border-left: 2px solid var(--cyan);
+        }
+
+        .modal::after {
+            content: '';
+            position: absolute;
+            bottom: -1px; right: -1px;
+            width: 20px; height: 20px;
+            border-bottom: 2px solid var(--cyan);
+            border-right: 2px solid var(--cyan);
+        }
+
+        .modal h3 {
+            font-family: var(--font-display);
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+            color: var(--cyan);
+        }
+
+        .modal p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        .modal-btns { display: flex; gap: 0.75rem; justify-content: center; }
+
+        /* ══════════ TODAY'S QUEUE ══════════ */
+        .queue-section { margin-bottom: 2.5rem; }
+
+        .queue-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1px;
+            background: var(--cyan-10);
+            border: 1px solid var(--cyan-10);
+        }
+
+        .queue-card {
+            background: rgba(0,0,0,0.85);
+            padding: 1.1rem 1.25rem;
+            border-left: 3px solid var(--cyan-60);
+            transition: background 0.2s ease;
+        }
+
+        .queue-card:hover { background: var(--cyan-05); }
+
+        .queue-card.status-waiting     { border-left-color: var(--amber); }
+        .queue-card.status-in-progress { border-left-color: var(--cyan); }
+        .queue-card.status-ready       { border-left-color: var(--green); }
+
+        .queue-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .queue-name {
+            font-family: var(--font-display);
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+            color: var(--cyan);
+        }
+
+        .queue-wait {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        .queue-meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.15rem;
+        }
+
+        .queue-service {
+            font-size: 0.8rem;
+            color: var(--cyan-60);
+            margin-bottom: 0.75rem;
+        }
+
+        .queue-controls {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .queue-status-select {
+            flex: 1 1 120px;
+            background: rgba(0,0,0,0.8);
+            color: var(--cyan);
+            border: 1px solid var(--cyan-30);
+            padding: 6px 24px 6px 8px;
+            font-family: var(--font-display);
+            font-size: 0.5rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            cursor: pointer;
+            outline: none;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2301D5DA' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 6px center;
+        }
+
+        .queue-quote-btn {
+            flex: 0 0 auto;
+            padding: 6px 12px;
+            font-family: var(--font-display);
+            font-size: 0.5rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            cursor: pointer;
+            background: var(--cyan-10);
+            color: var(--cyan);
+            border: 1px solid var(--cyan-30);
+        }
+
+        .queue-quote-btn:hover { border-color: var(--cyan); box-shadow: 0 0 10px var(--cyan-30); }
+
+        .queue-empty {
+            padding: 1.25rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            border: 1px solid var(--cyan-10);
+            border-left: 3px solid var(--cyan-30);
+            background: rgba(0,0,0,0.6);
+        }
+
+        /* Small action button used in the table's Actions column */
+        .quote-btn {
+            padding: 7px 12px;
+            font-family: var(--font-display);
+            font-size: 0.55rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            cursor: pointer;
+            background: var(--cyan-10);
+            color: var(--cyan);
+            border: 1px solid var(--cyan-30);
+            transition: all 0.2s ease;
+        }
+
+        .quote-btn:hover { border-color: var(--cyan); box-shadow: 0 0 12px var(--cyan-30); }
+
+        /* ══════════ QUOTE BUILDER MODAL ══════════ */
+        .quote-modal {
+            max-width: 760px;
+            width: calc(100% - 40px);
+            max-height: 88vh;
+            overflow-y: auto;
+            text-align: left;
+        }
+
+        .quote-modal h3 { text-align: center; margin-bottom: 0.25rem; }
+        .quote-modal .quote-subtitle {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .quote-columns {
+            display: grid;
+            grid-template-columns: 1.3fr 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 640px) {
+            .quote-columns { grid-template-columns: 1fr; }
+        }
+
+        .quote-category-title {
+            font-family: var(--font-display);
+            font-size: 0.6rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin: 1rem 0 0.5rem;
+        }
+
+        .quote-category-title:first-child { margin-top: 0; }
+
+        .quote-item-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 8px 10px;
+            border: 1px solid var(--cyan-10);
+            margin-bottom: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .quote-item-row:hover { border-color: var(--cyan-30); background: var(--cyan-05); }
+        .quote-item-row.selected { border-color: var(--cyan); background: var(--cyan-10); }
+
+        .quote-item-price { color: var(--cyan-60); font-size: 0.8rem; white-space: nowrap; }
+
+        .quote-selected-panel {
+            border: 1px solid var(--cyan-10);
+            background: rgba(0,0,0,0.6);
+            padding: 1rem;
+        }
+
+        .quote-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(1,213,218,0.08);
+        }
+
+        .quote-line .remove-line {
+            background: none; border: none; color: var(--red);
+            cursor: pointer; font-size: 0.8rem; padding: 0 4px;
+        }
+
+        .quote-total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--cyan-30);
+        }
+
+        .quote-total-label {
+            font-family: var(--font-display);
+            font-size: 0.65rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .quote-total-value {
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: var(--cyan);
+            text-shadow: 0 0 12px var(--cyan-30);
+        }
+
+        .quote-note-field {
+            width: 100%;
+            margin-top: 0.75rem;
+            background: rgba(0,0,0,0.8);
+            border: 1px solid var(--cyan-30);
+            color: var(--cyan);
+            font-family: var(--font-body);
+            font-size: 0.85rem;
+            padding: 8px 10px;
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .quote-actions {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+            justify-content: flex-end;
+        }
+
+        .quote-custom-note {
+            font-size: 0.7rem;
+            color: var(--amber);
+            margin-top: 4px;
+        }
+
+        /* ══════════ RESPONSIVE ══════════ */
+        @media (max-width: 640px) {
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-inner">
+            <div class="logo-group">
+                <img src="images/Main.png" alt="Speedy Auto Tint" onerror="this.style.display='none'">
+                <div class="logo-text">
+                    Dashboard
+                    <span class="logo-sub-text">Speedy Auto Tint · Internal</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <a class="btn btn-ghost" href="pricing_module/pricing-reference.html">Pricing Sheet</a>
+                <button class="btn btn-ghost" id="refreshBtn">↺ Refresh</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-inner">
+            <div class="spin-ring">
+                <div></div><div></div><div></div>
+            </div>
+            <p class="loading-text">Refreshing Data…</p>
+        </div>
+    </div>
+
+    <main>
+        <h1 class="page-title">Quote Requests</h1>
+        <p class="page-subtitle" id="last-updated">Loading…</p>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card c-total">
+                <div class="stat-number" id="stat-total">—</div>
+                <div class="stat-label">Total</div>
+            </div>
+            <div class="stat-card c-new">
+                <div class="stat-number" id="stat-new">—</div>
+                <div class="stat-label">New</div>
+            </div>
+            <div class="stat-card c-pending">
+                <div class="stat-number" id="stat-pending">—</div>
+                <div class="stat-label">Pending</div>
+            </div>
+            <div class="stat-card c-done">
+                <div class="stat-number" id="stat-done">—</div>
+                <div class="stat-label">Completed</div>
+            </div>
+        </div>
+
+        <!-- Today's Queue (walk-ins from the kiosk) -->
+        <div class="queue-section">
+            <span class="section-label">Today's Queue</span>
+            <div class="queue-grid" id="queue-container"></div>
+        </div>
+
+        <!-- Alerts -->
+        <div class="alerts-section">
+            <span class="section-label">Action Required</span>
+            <div id="alert-container"></div>
+        </div>
+
+        <!-- Table -->
+        <div>
+            <div class="table-section-title">All Quote Requests</div>
+            <div class="table-wrapper">
+                <table id="customer-table">
+                    <thead>
+                        <tr>
+                            <th>Received</th>
+                            <th>Name</th>
+                            <th>Contact</th>
+                            <th>Vehicle</th>
+                            <th>Service</th>
+                            <th>Add-ons</th>
+                            <th>Pref. Date</th>
+                            <th>Status</th>
+                            <th>Notes</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Confirm modal -->
+    <div class="modal-backdrop" id="modal">
+        <div class="modal">
+            <h3>Confirm Delete</h3>
+            <p id="modal-msg">Delete this record?</p>
+            <div class="modal-btns">
+                <button class="btn delete-btn" id="modal-yes">Delete</button>
+                <button class="btn btn-ghost" id="modal-no">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quote Builder modal -->
+    <div class="modal-backdrop" id="quote-modal">
+        <div class="modal quote-modal">
+            <h3 id="quote-modal-title">Build Quote</h3>
+            <p class="quote-subtitle" id="quote-modal-subtitle">—</p>
+
+            <div class="quote-columns">
+                <div>
+                    <div id="quote-service-list"></div>
+                </div>
+                <div class="quote-selected-panel">
+                    <div class="quote-category-title">Selected Items</div>
+                    <div id="quote-line-items"></div>
+                    <div class="quote-total-row">
+                        <span class="quote-total-label">Total</span>
+                        <span class="quote-total-value" id="quote-total">$0</span>
+                    </div>
+                    <textarea class="quote-note-field" id="quote-notes" placeholder="Notes for this quote (e.g. custom quote amounts, special instructions)…"></textarea>
+                </div>
+            </div>
+
+            <div class="quote-actions">
+                <button class="btn btn-ghost" id="quote-close-btn">Close</button>
+                <button class="btn btn-ghost" id="quote-print-btn">🖨 Print</button>
+                <button class="btn btn-ghost" id="quote-email-btn">✉ Email Quote</button>
+                <button class="btn btn-ghost" id="quote-workorder-btn">Convert to Work Order</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    /* ═══════════════════════════════════
+       DATA STORE HELPERS
+       Browser storage is wrapped by pricing-data/app-data-store.js so this
+       dashboard can move to Supabase or a similar shared backend later
+       without rewriting the dashboard UI.
+    ═══════════════════════════════════ */
+
+    const STORAGE_KEY = 'quoteRequests';
+
+    function getCustomers() {
+        if (!window.SpeedyDataStore) return [];
+        const raw = SpeedyDataStore.readRaw(STORAGE_KEY);
+        if (!raw) return getSampleData();
+        const parsed = SpeedyDataStore.readJSON(STORAGE_KEY, []);
+        return Array.isArray(parsed) ? parsed : [];
+    }
+
+    function saveCustomers(list) {
+        if (window.SpeedyDataStore) SpeedyDataStore.writeRequests(list);
+    }
+
+    function getSampleData() {
+        const demo = [
+            {
+                id: 'demo_001',
+                name: 'Gabriel Torres',
+                phone: '256-701-6388',
+                email: 'gabriel@example.com',
+                year: '2022', make: 'Toyota', model: 'Tundra',
+                service: 'Full Vehicle Tint',
+                addons: ['Ceramic Tint Upgrade', 'Sunroof'],
+                preferred_date: '2026-02-20',
+                notes: 'Get air bubbles out of previous job.',
+                submissionDate: new Date(Date.now() - 30 * 60 * 60 * 1000).toISOString(),
+                status: 'new',
+                source: 'web'
+            },
+            {
+                id: 'demo_002',
+                name: 'Maria Sanchez',
+                phone: '256-444-9201',
+                email: 'maria@example.com',
+                year: '2021', make: 'Ford', model: 'F-150',
+                service: 'Paint Protection Film (PPF)',
+                addons: [],
+                preferred_date: '2026-02-25',
+                notes: '',
+                submissionDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+                status: 'contacted',
+                source: 'web'
+            },
+            {
+                id: 'demo_003',
+                name: 'John Smith',
+                phone: '256-555-0110',
+                email: '',
+                year: '2023', make: 'Honda', model: 'Civic',
+                service: 'Window Tint',
+                addons: [],
+                preferred_date: '',
+                notes: '',
+                submissionDate: new Date(Date.now() - 12 * 60 * 1000).toISOString(),
+                status: 'new',
+                source: 'walk-in',
+                queueStatus: 'waiting'
+            }
+        ];
+        saveCustomers(demo);
+        return demo;
+    }
+
+    /* ═══════════════════════════════════
+       RENDER
+    ═══════════════════════════════════ */
+
+    function renderAll() {
+        const customers = getCustomers();
+        renderStats(customers);
+        renderQueue(customers);
+        renderAlerts(customers);
+        renderTable(customers);
+        document.getElementById('last-updated').textContent =
+            `Last updated: ${new Date().toLocaleString()}`;
+    }
+
+    /* ═══════════════════════════════════
+       TODAY'S QUEUE (kiosk walk-ins)
+    ═══════════════════════════════════ */
+
+    function renderQueue(list) {
+        const container = document.getElementById('queue-container');
+        if (!container) return;
+        container.innerHTML = '';
+
+        const startOfToday = new Date();
+        startOfToday.setHours(0, 0, 0, 0);
+
+        const queueItems = list
+            .filter(c => c.source === 'walk-in'
+                && c.queueStatus && c.queueStatus !== 'done'
+                && new Date(c.submissionDate) >= startOfToday)
+            .sort((a, b) => new Date(a.submissionDate) - new Date(b.submissionDate));
+
+        if (queueItems.length === 0) {
+            container.innerHTML = '<div class="queue-empty">No walk-ins waiting right now.</div>';
+            return;
+        }
+
+        queueItems.forEach(c => {
+            const waitMin = Math.max(0, Math.floor((Date.now() - new Date(c.submissionDate).getTime()) / 60000));
+            const vehicle = (c.year && c.make && c.model) ? `${escHtml(c.year)} ${escHtml(c.make)} ${escHtml(c.model)}` : 'Vehicle not specified';
+
+            const card = document.createElement('div');
+            card.className = `queue-card status-${c.queueStatus}`;
+            card.innerHTML = `
+                <div class="queue-top">
+                    <span class="queue-name">${escHtml(c.name)}</span>
+                    <span class="queue-wait">${waitMin} min</span>
+                </div>
+                <div class="queue-meta">${vehicle}</div>
+                <div class="queue-service">${escHtml(c.service || 'Service not specified')}</div>
+                <div class="queue-controls">
+                    <select class="queue-status-select" data-id="${escHtml(c.id)}">
+                        <option value="waiting"     ${c.queueStatus === 'waiting'     ? 'selected' : ''}>Waiting</option>
+                        <option value="in-progress" ${c.queueStatus === 'in-progress' ? 'selected' : ''}>In Progress</option>
+                        <option value="ready"       ${c.queueStatus === 'ready'       ? 'selected' : ''}>Ready</option>
+                        <option value="done"        ${c.queueStatus === 'done'        ? 'selected' : ''}>Completed</option>
+                    </select>
+                    <button class="queue-quote-btn" data-id="${escHtml(c.id)}">Quote</button>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+        container.querySelectorAll('.queue-status-select').forEach(sel => {
+            sel.addEventListener('change', e => {
+                updateRecord(e.target.dataset.id, { queueStatus: e.target.value });
+            });
+        });
+
+        container.querySelectorAll('.queue-quote-btn').forEach(btn => {
+            btn.addEventListener('click', e => openQuoteModal(e.target.dataset.id));
+        });
+    }
+
+    function updateRecord(id, patch) {
+        const list = getCustomers();
+        const rec = list.find(c => c.id === id);
+        if (!rec) return;
+        Object.assign(rec, patch, { lastModified: new Date().toISOString() });
+        saveCustomers(list);
+        renderAll();
+    }
+
+    function renderStats(list) {
+        document.getElementById('stat-total').textContent   = list.length;
+        document.getElementById('stat-new').textContent     = list.filter(c => c.status === 'new').length;
+        document.getElementById('stat-pending').textContent = list.filter(c => ['contacted','scheduled'].includes(c.status)).length;
+        document.getElementById('stat-done').textContent    = list.filter(c => c.status === 'completed').length;
+    }
+
+    function renderAlerts(list) {
+        const container = document.getElementById('alert-container');
+        container.innerHTML = '';
+        const now = Date.now();
+        let found = false;
+
+        // Sort newest first for alert check
+        const sorted = [...list].sort((a,b) => new Date(b.submissionDate) - new Date(a.submissionDate));
+
+        sorted.forEach(c => {
+            const ageHrs = (now - new Date(c.submissionDate).getTime()) / 3600000;
+            if (c.status === 'new' && ageHrs > 24) {
+                const el = document.createElement('div');
+                el.className = 'alert-card';
+                el.innerHTML = `
+                    <div class="alert-dot"></div>
+                    <div>
+                        <div class="alert-title">Contact Reminder</div>
+                        <div class="alert-body">
+                            Reach out to <strong>${escHtml(c.name)}</strong> —
+                            request received ${Math.floor(ageHrs)} hours ago.
+                            <a href="tel:${escHtml(c.phone)}" style="color:var(--red);margin-left:6px;">${escHtml(c.phone)}</a>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(el);
+                found = true;
+            }
+        });
+
+        if (!found) {
+            container.innerHTML = '<div class="no-alerts">✓ No urgent alerts — all requests addressed within 24 hours.</div>';
+        }
+    }
+
+    function renderTable(list) {
+        const tbody = document.getElementById('table-body');
+        tbody.innerHTML = '';
+
+        if (list.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="10"><div class="empty-state"><p>No quote requests received yet.</p></div></td></tr>`;
+            return;
+        }
+
+        const sorted = [...list].sort((a,b) => new Date(b.submissionDate) - new Date(a.submissionDate));
+
+        sorted.forEach((c, idx) => {
+            const sub  = new Date(c.submissionDate);
+            const vehicle = (c.year && c.make && c.model)
+                ? `${escHtml(c.year)} ${escHtml(c.make)} ${escHtml(c.model)}`
+                : escHtml(c.vehicle || 'N/A');
+            const addons = Array.isArray(c.addons) && c.addons.length
+                ? c.addons.map(escHtml).join(', ')
+                : '—';
+            const prefDate = c.preferred_date
+                ? new Date(c.preferred_date + 'T00:00:00').toLocaleDateString()
+                : '—';
+
+            const statusBadgeMap = {
+                new:       'badge-new',
+                contacted: 'badge-contacted',
+                scheduled: 'badge-scheduled',
+                completed: 'badge-completed'
+            };
+            const badgeClass = statusBadgeMap[c.status] || 'badge-new';
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>
+                    ${sub.toLocaleDateString()}
+                    <span class="meta-text">${sub.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</span>
+                </td>
+                <td><strong>${escHtml(c.name)}</strong></td>
+                <td>
+                    <a href="tel:${escHtml(c.phone)}">${escHtml(c.phone)}</a>
+                    ${c.email ? `<span class="meta-text"><a href="mailto:${escHtml(c.email)}">${escHtml(c.email)}</a></span>` : ''}
+                </td>
+                <td>${vehicle}</td>
+                <td>${escHtml(c.service || '—')}</td>
+                <td style="font-size:0.8rem;color:var(--text-muted)">${addons}</td>
+                <td>${prefDate}</td>
+                <td><span class="badge ${badgeClass}">${escHtml(c.status)}</span></td>
+                <td style="font-size:0.85rem;color:var(--text-muted);max-width:200px;">${escHtml(c.notes || '—')}</td>
+                <td>
+                    <div style="display:flex;gap:6px;align-items:center;flex-wrap:nowrap;">
+                        <select class="status-select" data-id="${escHtml(c.id)}">
+                            <option value="new"       ${c.status==='new'       ?'selected':''}>New</option>
+                            <option value="contacted" ${c.status==='contacted' ?'selected':''}>Contacted</option>
+                            <option value="scheduled" ${c.status==='scheduled' ?'selected':''}>Scheduled</option>
+                            <option value="completed" ${c.status==='completed' ?'selected':''}>Completed</option>
+                        </select>
+                        <button class="quote-btn" data-id="${escHtml(c.id)}">Quote</button>
+                        <button class="delete-btn" data-id="${escHtml(c.id)}" data-name="${escHtml(c.name)}">Del</button>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        bindTableEvents();
+    }
+
+    function bindTableEvents() {
+        document.querySelectorAll('.quote-btn').forEach(btn => {
+            btn.addEventListener('click', e => openQuoteModal(e.target.dataset.id));
+        });
+
+        document.querySelectorAll('.status-select').forEach(sel => {
+            sel.addEventListener('change', e => {
+                const id = e.target.dataset.id;
+                const newStatus = e.target.value;
+                const list = getCustomers();
+                const rec = list.find(c => c.id === id);
+                if (rec) {
+                    rec.status = newStatus;
+                    rec.lastModified = new Date().toISOString();
+                    saveCustomers(list);
+                    renderAll();
+                }
+            });
+        });
+
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', e => {
+                const id   = e.target.dataset.id;
+                const name = e.target.dataset.name;
+                showModal(`Delete request from "${name}"? This cannot be undone.`, () => {
+                    const list = getCustomers().filter(c => c.id !== id);
+                    saveCustomers(list);
+                    renderAll();
+                });
+            });
+        });
+    }
+
+    /* ═══════════════════════════════════
+       MODAL
+    ═══════════════════════════════════ */
+    let pendingAction = null;
+
+    function showModal(msg, cb) {
+        document.getElementById('modal-msg').textContent = msg;
+        document.getElementById('modal').classList.add('active');
+        pendingAction = cb;
+    }
+
+    document.getElementById('modal-yes').addEventListener('click', () => {
+        if (pendingAction) pendingAction();
+        document.getElementById('modal').classList.remove('active');
+        pendingAction = null;
+    });
+
+    document.getElementById('modal-no').addEventListener('click', () => {
+        document.getElementById('modal').classList.remove('active');
+        pendingAction = null;
+    });
+
+    /* ═══════════════════════════════════
+       QUOTE BUILDER
+       Pulls its service list and prices from pricing-data/pricing.json
+       via PricingService, so it always matches the employee Pricing
+       Center and the kiosk. Saved quotes are kept per-request in the
+       'quotesByRequest' storage key.
+    ═══════════════════════════════════ */
+
+    const QUOTES_KEY = 'quotesByRequest';
+    let quotePricingData = null;
+    let activeQuoteRequestId = null;
+    let activeQuoteLines = []; // [{ id, name, amount }]
+
+    function getSavedQuotes() {
+        return window.SpeedyDataStore ? SpeedyDataStore.readQuotesByRequest() : {};
+    }
+
+    function saveQuoteForRequest(requestId, quote) {
+        const all = getSavedQuotes();
+        all[requestId] = quote;
+        if (window.SpeedyDataStore) SpeedyDataStore.writeQuotesByRequest(all);
+    }
+
+    async function openQuoteModal(requestId) {
+        const record = getCustomers().find(c => c.id === requestId);
+        if (!record) return;
+
+        activeQuoteRequestId = requestId;
+
+        document.getElementById('quote-modal-title').textContent = `Quote — ${record.name}`;
+        const vehicle = (record.year && record.make && record.model)
+            ? `${record.year} ${record.make} ${record.model}` : 'Vehicle not specified';
+        document.getElementById('quote-modal-subtitle').textContent = `${vehicle} · ${record.service || 'Service not specified'}`;
+
+        const saved = getSavedQuotes()[requestId];
+        activeQuoteLines = saved ? saved.lineItems.slice() : [];
+        document.getElementById('quote-notes').value = saved ? (saved.notes || '') : '';
+
+        const listEl = document.getElementById('quote-service-list');
+        listEl.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem;">Loading pricing…</p>';
+        document.getElementById('quote-modal').classList.add('active');
+
+        try {
+            if (!quotePricingData) {
+                quotePricingData = await PricingService.load('pricing-data/pricing.json');
+            }
+            renderQuoteServiceList(quotePricingData);
+            renderQuoteLines();
+        } catch (err) {
+            listEl.innerHTML = '<p style="color:var(--red);font-size:0.85rem;">Could not load pricing-data/pricing.json — check the file path.</p>';
+            console.error('[Quote Builder]', err);
+        }
+    }
+
+    function renderQuoteServiceList(data) {
+        const listEl = document.getElementById('quote-service-list');
+        listEl.innerHTML = '';
+
+        const categories = PricingService.categories(data);
+        categories.forEach(category => {
+            const title = document.createElement('div');
+            title.className = 'quote-category-title';
+            title.textContent = category;
+            listEl.appendChild(title);
+
+            PricingService.byCategory(data, category).forEach(svc => {
+                const isSelected = activeQuoteLines.some(l => l.id === svc.id);
+                const row = document.createElement('div');
+                row.className = 'quote-item-row' + (isSelected ? ' selected' : '');
+                row.dataset.id = svc.id;
+                row.innerHTML = `
+                    <span>${escHtml(svc.name)}</span>
+                    <span class="quote-item-price">${escHtml(PricingService.priceText(svc))}</span>
+                `;
+                row.addEventListener('click', () => toggleQuoteLine(svc));
+                listEl.appendChild(row);
+            });
+        });
+    }
+
+    function toggleQuoteLine(svc) {
+        const existingIdx = activeQuoteLines.findIndex(l => l.id === svc.id);
+        if (existingIdx > -1) {
+            activeQuoteLines.splice(existingIdx, 1);
+        } else {
+            activeQuoteLines.push({
+                id: svc.id,
+                name: svc.name,
+                amount: PricingService.numericValue(svc),
+                custom: !!svc.custom
+            });
+        }
+        renderQuoteServiceList(quotePricingData);
+        renderQuoteLines();
+    }
+
+    function renderQuoteLines() {
+        const wrap = document.getElementById('quote-line-items');
+        wrap.innerHTML = '';
+
+        if (activeQuoteLines.length === 0) {
+            wrap.innerHTML = '<p style="color:var(--text-muted);font-size:0.8rem;">No services selected yet.</p>';
+        }
+
+        let total = 0;
+        let hasCustom = false;
+
+        activeQuoteLines.forEach(line => {
+            total += Number(line.amount) || 0;
+            if (line.custom) hasCustom = true;
+
+            const row = document.createElement('div');
+            row.className = 'quote-line';
+            row.innerHTML = `
+                <span>${escHtml(line.name)}</span>
+                <span style="display:flex;align-items:center;gap:6px;">
+                    ${line.custom
+                        ? `<input type="number" min="0" step="1" value="${line.amount || ''}" placeholder="Enter $" data-id="${escHtml(line.id)}" class="quote-custom-input" style="width:80px;background:rgba(0,0,0,0.8);border:1px solid var(--cyan-30);color:var(--cyan);padding:3px 6px;font-family:var(--font-body);">`
+                        : `$${Number(line.amount).toLocaleString()}`}
+                    <button class="remove-line" data-id="${escHtml(line.id)}" title="Remove">✕</button>
+                </span>
+            `;
+            wrap.appendChild(row);
+        });
+
+        wrap.querySelectorAll('.remove-line').forEach(btn => {
+            btn.addEventListener('click', () => {
+                activeQuoteLines = activeQuoteLines.filter(l => l.id !== btn.dataset.id);
+                renderQuoteServiceList(quotePricingData);
+                renderQuoteLines();
+            });
+        });
+
+        wrap.querySelectorAll('.quote-custom-input').forEach(input => {
+            input.addEventListener('input', () => {
+                const line = activeQuoteLines.find(l => l.id === input.dataset.id);
+                if (line) {
+                    line.amount = parseFloat(input.value) || 0;
+                    updateQuoteTotal();
+                }
+            });
+        });
+
+        if (hasCustom) {
+            const note = document.createElement('p');
+            note.className = 'quote-custom-note';
+            note.textContent = '⚠ Enter a $ amount for custom-quote items above — they aren\u2019t counted until you do.';
+            wrap.appendChild(note);
+        }
+
+        document.getElementById('quote-total').textContent = '$' + total.toLocaleString();
+    }
+
+    function updateQuoteTotal() {
+        const total = activeQuoteLines.reduce((sum, l) => sum + (Number(l.amount) || 0), 0);
+        document.getElementById('quote-total').textContent = '$' + total.toLocaleString();
+    }
+
+    function currentQuoteTotal() {
+        return activeQuoteLines.reduce((sum, l) => sum + (Number(l.amount) || 0), 0);
+    }
+
+    function persistActiveQuote() {
+        if (!activeQuoteRequestId) return;
+        saveQuoteForRequest(activeQuoteRequestId, {
+            lineItems: activeQuoteLines,
+            notes: document.getElementById('quote-notes').value,
+            total: currentQuoteTotal(),
+            updatedAt: new Date().toISOString()
+        });
+    }
+
+    document.getElementById('quote-close-btn').addEventListener('click', () => {
+        persistActiveQuote();
+        document.getElementById('quote-modal').classList.remove('active');
+        activeQuoteRequestId = null;
+    });
+
+    document.getElementById('quote-print-btn').addEventListener('click', () => {
+        persistActiveQuote();
+        window.print();
+    });
+
+    document.getElementById('quote-email-btn').addEventListener('click', () => {
+        persistActiveQuote();
+        const record = getCustomers().find(c => c.id === activeQuoteRequestId);
+        if (!record) return;
+        const lines = activeQuoteLines.map(l => `- ${l.name}: $${Number(l.amount).toLocaleString()}`).join('%0D%0A');
+        const total = currentQuoteTotal();
+        const subject = encodeURIComponent(`Your Speedy Auto Tint Quote`);
+        const body = `Hi ${record.name},%0D%0A%0D%0AHere's the quote we discussed:%0D%0A%0D%0A${lines}%0D%0A%0D%0ATotal: $${total.toLocaleString()}%0D%0A%0D%0AThanks,%0D%0ASpeedy Auto Tint`;
+        const mailto = `mailto:${encodeURIComponent(record.email || '')}?subject=${subject}&body=${body}`;
+        window.location.href = mailto;
+    });
+
+    document.getElementById('quote-workorder-btn').addEventListener('click', () => {
+        persistActiveQuote();
+        updateRecord(activeQuoteRequestId, { status: 'scheduled' });
+        document.getElementById('quote-modal').classList.remove('active');
+        activeQuoteRequestId = null;
+        // NOTE: this currently just marks the request "Scheduled". A dedicated
+        // Work Orders module (job tracking, technician assignment, parts) is a
+        // natural next module once the Quotes tab exists on its own.
+    });
+
+    /* ═══════════════════════════════════
+       REFRESH
+    ═══════════════════════════════════ */
+    function showLoading()  { document.getElementById('loadingOverlay').classList.add('active'); }
+    function hideLoading()  { setTimeout(() => document.getElementById('loadingOverlay').classList.remove('active'), 600); }
+
+    document.getElementById('refreshBtn').addEventListener('click', () => {
+        showLoading();
+        setTimeout(() => { renderAll(); hideLoading(); }, 800);
+    });
+
+    /* ═══════════════════════════════════
+       CROSS-TAB SYNC
+    ═══════════════════════════════════ */
+    window.addEventListener('storage', e => {
+        if (e.key === STORAGE_KEY) renderAll();
+    });
+
+    /* ═══════════════════════════════════
+       SECURITY: HTML escape helper
+    ═══════════════════════════════════ */
+    function escHtml(str) {
+        if (str == null) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#x27;');
+    }
+
+    /* ═══════════════════════════════════
+       AUTO-REFRESH every 60 seconds
+    ═══════════════════════════════════ */
+    setInterval(() => renderAll(), 60000);
+
+    /* ── Init ── */
+    renderAll();
+    </script>
+</body>
+</html>
+

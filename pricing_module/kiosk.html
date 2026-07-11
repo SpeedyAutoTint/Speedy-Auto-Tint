@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Welcome — Speedy Auto Tint</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="apple-touch-icon" href="favicon.png">
+
+<!-- Centralized pricing (available to the kiosk if a future step needs to show ballpark pricing) -->
+<script defer src="pricing-data/pricing-service.js"></script>
+
+<style>
+    :root {
+        --cyan: #01D5DA;
+        --cyan-60: rgba(1,213,218,0.6);
+        --cyan-30: rgba(1,213,218,0.3);
+        --cyan-10: rgba(1,213,218,0.1);
+        --cyan-05: rgba(1,213,218,0.05);
+        --red: #e05555;
+        --red-30: rgba(224,85,85,0.3);
+        --amber: #f0ad4e;
+        --green: #4ecf8c;
+        --bg: #000;
+        --text-muted: rgba(1,213,218,0.6);
+        --font-display: 'Orbitron', monospace;
+        --font-body: 'Rajdhani', monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    html, body {
+        height: 100%;
+        overflow: hidden; /* kiosk: no accidental scroll-away */
+    }
+
+    body {
+        background: var(--bg);
+        color: var(--cyan);
+        font-family: var(--font-body);
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-touch-callout: none;
+        touch-action: manipulation;
+        padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+        position: relative;
+    }
+
+    /* Inputs/textareas need normal selection so staff can edit text */
+    input, textarea, select { -webkit-user-select: text; user-select: text; }
+
+    body::before {
+        content: '';
+        position: fixed; inset: 0;
+        background-image:
+            linear-gradient(0deg, transparent 0px, rgba(1,213,218,0.04) 1px, transparent 2px),
+            linear-gradient(90deg, transparent 0px, rgba(1,213,218,0.04) 1px, transparent 2px);
+        background-size: 60px 60px;
+        pointer-events: none;
+    }
+
+    .screen {
+        position: fixed;
+        inset: 0;
+        display: none;
+        flex-direction: column;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: clamp(20px, 4vw, 48px);
+    }
+
+    .screen.active { display: flex; }
+
+    /* ══════════ SHARED UI ══════════ */
+
+    .kiosk-header {
+        text-align: center;
+        margin-bottom: clamp(20px, 4vh, 40px);
+        flex-shrink: 0;
+    }
+
+    .kiosk-eyebrow {
+        font-family: var(--font-display);
+        font-size: 0.7rem;
+        letter-spacing: 0.4em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+    }
+
+    .kiosk-title {
+        font-family: var(--font-display);
+        font-weight: 900;
+        font-size: clamp(1.6rem, 5vw, 2.6rem);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        text-shadow: 0 0 25px var(--cyan-30);
+        margin-top: 0.3rem;
+    }
+
+    .kiosk-body {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        max-width: 900px;
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    .back-btn {
+        position: absolute;
+        top: clamp(16px, 3vh, 32px);
+        left: clamp(16px, 3vw, 32px);
+        font-family: var(--font-display);
+        font-size: 0.65rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        background: transparent;
+        border: 1px solid var(--cyan-30);
+        padding: 12px 20px;
+        cursor: pointer;
+    }
+
+    .back-btn:active { background: var(--cyan-10); }
+
+    .big-btn {
+        font-family: var(--font-display);
+        font-size: clamp(1rem, 2.2vw, 1.3rem);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--cyan);
+        background: rgba(1,213,218,0.06);
+        border: 1px solid var(--cyan-30);
+        padding: clamp(28px, 5vh, 44px) 24px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        min-height: 88px;
+    }
+
+    .big-btn:active {
+        background: var(--cyan-10);
+        box-shadow: 0 0 30px var(--cyan-30);
+    }
+
+    .big-btn.primary {
+        background: var(--cyan);
+        color: #000;
+        border-color: var(--cyan);
+        box-shadow: 0 0 30px rgba(1,213,218,0.3);
+    }
+
+    .big-btn.primary:active { background: #fff; }
+
+    .big-btn:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+    }
+
+    .field { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.25rem; }
+
+    .field label {
+        font-family: var(--font-display);
+        font-size: 0.7rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+    }
+
+    .field input, .field select, .field textarea {
+        background: rgba(1,213,218,0.05);
+        border: 1px solid var(--cyan-30);
+        color: var(--cyan);
+        font-family: var(--font-body);
+        font-size: 1.2rem;
+        padding: 18px 16px;
+        width: 100%;
+        outline: none;
+        -webkit-appearance: none;
+        appearance: none;
+    }
+
+    .field select {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1l6 6 6-6' stroke='%2301D5DA' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 16px center;
+        padding-right: 44px;
+    }
+
+    .field input:focus, .field select:focus, .field textarea:focus {
+        border-color: var(--cyan);
+        box-shadow: 0 0 15px rgba(1,213,218,0.15);
+    }
+
+    .field-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+    @media (max-width: 640px) { .field-row { grid-template-columns: 1fr; } }
+
+    .toggle-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .toggle-card { position: relative; }
+    .toggle-card input { position: absolute; opacity: 0; pointer-events: none; }
+    .toggle-label {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        min-height: 76px;
+        padding: 14px;
+        border: 1px solid var(--cyan-30);
+        background: rgba(1,213,218,0.04);
+        font-family: var(--font-display);
+        font-size: 0.85rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--cyan);
+        cursor: pointer;
+    }
+    .toggle-card input:checked + .toggle-label {
+        background: var(--cyan-10);
+        border-color: var(--cyan);
+        box-shadow: 0 0 15px rgba(1,213,218,0.2), inset 0 0 12px rgba(1,213,218,0.06);
+    }
+
+    .photo-row { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+    .photo-choice-btn {
+        flex: 1 1 200px;
+        padding: 16px;
+        border: 1px solid var(--cyan-30);
+        background: rgba(1,213,218,0.04);
+        color: var(--cyan);
+        font-family: var(--font-display);
+        font-size: 0.75rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        cursor: pointer;
+    }
+    .photo-upload-input { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+    .photo-status { font-size: 0.9rem; color: var(--text-muted); margin-top: 0.5rem; }
+
+    .cta-row { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap; }
+
+    .vehicle-pick-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.75rem; margin-bottom: 1.5rem; }
+    .vehicle-pick-card {
+        border: 1px solid var(--cyan-30);
+        background: rgba(1,213,218,0.04);
+        padding: 18px;
+        cursor: pointer;
+        font-size: 1rem;
+    }
+    .vehicle-pick-card.selected {
+        border-color: var(--cyan);
+        background: var(--cyan-10);
+        box-shadow: 0 0 15px rgba(1,213,218,0.2);
+    }
+
+    .welcome-back-banner {
+        border: 1px solid var(--green);
+        background: rgba(78,207,140,0.08);
+        color: var(--green);
+        padding: 16px 20px;
+        margin-bottom: 1.5rem;
+        font-size: 1.05rem;
+        line-height: 1.5;
+    }
+
+    .not-found-banner {
+        border: 1px solid var(--amber);
+        background: rgba(240,173,78,0.08);
+        color: var(--amber);
+        padding: 16px 20px;
+        margin-bottom: 1.5rem;
+        font-size: 1.05rem;
+        line-height: 1.5;
+    }
+
+    .appt-card {
+        border: 1px solid var(--cyan-30);
+        background: rgba(1,213,218,0.04);
+        padding: 20px;
+        margin-bottom: 1rem;
+    }
+    .appt-date { font-family: var(--font-display); font-size: 1.1rem; color: var(--cyan); text-shadow: 0 0 10px var(--cyan-30); }
+    .appt-meta { color: var(--text-muted); margin-top: 0.4rem; }
+
+    /* ══════════ WELCOME ══════════ */
+    #screen-welcome .kiosk-body { justify-content: center; align-items: center; gap: clamp(24px, 5vh, 48px); text-align: center; }
+
+    .welcome-logo { display: flex; align-items: center; gap: 16px; }
+    .welcome-logo img { height: 64px; width: auto; filter: drop-shadow(0 0 10px var(--cyan-60)); }
+
+    .welcome-buttons {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+        width: 100%;
+        max-width: 520px;
+    }
+
+    .welcome-clock {
+        font-family: var(--font-display);
+        font-size: 0.8rem;
+        letter-spacing: 0.2em;
+        color: var(--text-muted);
+    }
+
+    /* ══════════ CONFIRMATION ══════════ */
+    #screen-confirm .kiosk-body { justify-content: center; align-items: center; text-align: center; gap: 1.5rem; }
+    .confirm-check {
+        width: 96px; height: 96px;
+        border: 2px solid var(--green);
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 0 30px rgba(78,207,140,0.2);
+    }
+    .confirm-check svg { width: 44px; height: 44px; stroke: var(--green); fill: none; stroke-width: 2.5; }
+</style>
+</head>
+<body>
+
+<!-- ══════════ WELCOME ══════════ -->
+<section class="screen active" id="screen-welcome">
+    <div class="kiosk-body">
+        <div class="welcome-logo">
+            <img src="images/Main.png" alt="" onerror="this.style.display='none'">
+        </div>
+        <div class="kiosk-header" style="margin-bottom:0;">
+            <div class="kiosk-eyebrow">Speedy Auto Tint</div>
+            <div class="kiosk-title">Welcome</div>
+        </div>
+        <div class="welcome-buttons">
+            <button class="big-btn primary" id="btn-new-customer">New Customer</button>
+            <button class="big-btn" id="btn-returning-customer">Returning Customer</button>
+            <button class="big-btn" id="btn-check-appointment">Check Appointment</button>
+        </div>
+        <div class="welcome-clock" id="welcome-clock"></div>
+    </div>
+</section>
+
+<!-- ══════════ RETURNING: PHONE LOOKUP ══════════ -->
+<section class="screen" id="screen-phone-lookup">
+    <button class="back-btn" data-goto="screen-welcome">← Start Over</button>
+    <div class="kiosk-header">
+        <div class="kiosk-eyebrow">Returning Customer</div>
+        <div class="kiosk-title">What's Your Phone Number?</div>
+    </div>
+    <div class="kiosk-body">
+        <div class="field">
+            <label for="lookup-phone">Mobile Number</label>
+            <input type="tel" id="lookup-phone" inputmode="tel" placeholder="(256) 555-0100" autocomplete="off">
+        </div>
+        <div class="cta-row">
+            <button class="big-btn primary" id="btn-lookup-submit" style="flex:0 0 auto;">Find Me</button>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════ RETURNING: RESULT ══════════ -->
+<section class="screen" id="screen-returning-result">
+    <button class="back-btn" data-goto="screen-welcome">← Start Over</button>
+    <div class="kiosk-header">
+        <div class="kiosk-eyebrow">Returning Customer</div>
+        <div class="kiosk-title" id="returning-result-title">Welcome Back</div>
+    </div>
+    <div class="kiosk-body">
+        <div id="returning-result-banner"></div>
+        <div id="returning-vehicle-picker"></div>
+        <div class="cta-row">
+            <button class="big-btn primary" id="btn-returning-continue" style="flex:0 0 auto;">Continue</button>
+            <button class="big-btn" id="btn-returning-as-new" style="flex:0 0 auto; display:none;">Check In as New Customer</button>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════ CHECK-IN FORM (new + returning share this) ══════════ -->
+<section class="screen" id="screen-checkin-form">
+    <button class="back-btn" data-goto="screen-welcome">← Start Over</button>
+    <div class="kiosk-header">
+        <div class="kiosk-eyebrow" id="checkin-eyebrow">New Customer</div>
+        <div class="kiosk-title">Tell Us About Your Visit</div>
+    </div>
+    <div class="kiosk-body">
+
+        <div id="checkin-identity-fields">
+            <div class="field-row">
+                <div class="field">
+                    <label for="ci-name">Full Name <span style="color:var(--red)">*</span></label>
+                    <input type="text" id="ci-name" placeholder="John Smith">
+                </div>
+                <div class="field">
+                    <label for="ci-phone">Mobile Number <span style="color:var(--red)">*</span></label>
+                    <input type="tel" id="ci-phone" inputmode="tel" placeholder="(256) 555-0100">
+                </div>
+                <div class="field">
+                    <label for="ci-email">Email (optional)</label>
+                    <input type="email" id="ci-email" placeholder="you@example.com">
+                </div>
+            </div>
+        </div>
+
+        <div class="field-row">
+            <div class="field">
+                <label for="ci-year">Vehicle Year</label>
+                <select id="ci-year"></select>
+            </div>
+            <div class="field">
+                <label for="ci-make">Make</label>
+                <select id="ci-make">
+                    <option value="" selected>Select make…</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="ci-model">Model</label>
+                <select id="ci-model" disabled>
+                    <option value="" selected>Select a make first…</option>
+                </select>
+            </div>
+        </div>
+
+        <label style="font-family:var(--font-display);font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:0.5rem;">Desired Service(s)</label>
+        <div class="toggle-grid" id="ci-services">
+            <div class="toggle-card"><input type="checkbox" id="svc-tint" value="Window Tint"><label class="toggle-label" for="svc-tint">Window Tint</label></div>
+            <div class="toggle-card"><input type="checkbox" id="svc-wrap" value="Vehicle Wrap"><label class="toggle-label" for="svc-wrap">Vehicle Wrap</label></div>
+            <div class="toggle-card"><input type="checkbox" id="svc-chrome" value="Chrome Delete"><label class="toggle-label" for="svc-chrome">Chrome Delete</label></div>
+            <div class="toggle-card"><input type="checkbox" id="svc-ppf" value="Paint Protection Film"><label class="toggle-label" for="svc-ppf">Paint Protection Film</label></div>
+            <div class="toggle-card"><input type="checkbox" id="svc-graphics" value="Vinyl Graphics"><label class="toggle-label" for="svc-graphics">Vinyl Graphics</label></div>
+        </div>
+
+        <div class="field">
+            <label for="ci-time">Preferred Appointment Time</label>
+            <select id="ci-time">
+                <option value="Walk-in / As soon as possible" selected>Walk-in / As soon as possible</option>
+                <option value="Morning">Morning</option>
+                <option value="Afternoon">Afternoon</option>
+                <option value="Evening">Evening</option>
+            </select>
+        </div>
+
+        <div class="field">
+            <label for="ci-notes">Notes</label>
+            <textarea id="ci-notes" rows="3" placeholder="Anything we should know?"></textarea>
+        </div>
+
+        <div class="field">
+            <label>Vehicle Photo (optional)</label>
+            <div class="photo-row">
+                <button type="button" class="photo-choice-btn" id="ci-photo-camera-btn">📷 Open Camera</button>
+                <button type="button" class="photo-choice-btn" id="ci-photo-file-btn">🖼 Choose Photo</button>
+            </div>
+            <input type="file" id="ci-photo-camera" class="photo-upload-input" accept="image/*" capture="environment">
+            <input type="file" id="ci-photo-file" class="photo-upload-input" accept="image/*">
+            <div class="photo-status" id="ci-photo-status">No photo selected.</div>
+        </div>
+
+        <div class="cta-row">
+            <button class="big-btn primary" id="btn-checkin-submit" style="flex:0 0 auto;">Check Me In</button>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════ CHECK APPOINTMENT: PHONE LOOKUP ══════════ -->
+<section class="screen" id="screen-appt-lookup">
+    <button class="back-btn" data-goto="screen-welcome">← Start Over</button>
+    <div class="kiosk-header">
+        <div class="kiosk-eyebrow">Check Appointment</div>
+        <div class="kiosk-title">What's Your Phone Number?</div>
+    </div>
+    <div class="kiosk-body">
+        <div class="field">
+            <label for="appt-phone">Mobile Number</label>
+            <input type="tel" id="appt-phone" inputmode="tel" placeholder="(256) 555-0100">
+        </div>
+        <div class="cta-row">
+            <button class="big-btn primary" id="btn-appt-submit" style="flex:0 0 auto;">Look Up</button>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════ CHECK APPOINTMENT: RESULT ══════════ -->
+<section class="screen" id="screen-appt-result">
+    <button class="back-btn" data-goto="screen-welcome">← Start Over</button>
+    <div class="kiosk-header">
+        <div class="kiosk-eyebrow">Check Appointment</div>
+        <div class="kiosk-title">Your Appointments</div>
+    </div>
+    <div class="kiosk-body">
+        <div id="appt-result-list"></div>
+        <div class="cta-row">
+            <button class="big-btn" data-goto="screen-welcome" style="flex:0 0 auto;">Done</button>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════ CONFIRMATION ══════════ -->
+<section class="screen" id="screen-confirm">
+    <div class="kiosk-body">
+        <div class="confirm-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="kiosk-title">You're Checked In!</div>
+        <p style="color:var(--text-muted); font-size:1.1rem; max-width:480px;">Have a seat — we'll come find you shortly.</p>
+        <button class="big-btn" data-goto="screen-welcome" style="flex:0 0 auto; margin-top:1rem;">Done</button>
+    </div>
+</section>
+
+<script>
+/* ═══════════════════════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════════════════════ */
+
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    resetIdleTimer();
+}
+
+document.querySelectorAll('[data-goto]').forEach(btn => {
+    btn.addEventListener('click', () => {
+        if (btn.dataset.goto === 'screen-welcome') resetCheckinState();
+        showScreen(btn.dataset.goto);
+    });
+});
+
+/* ═══════════════════════════════════════════════════════
+   IDLE TIMEOUT — return to Welcome after inactivity
+   so the kiosk is always ready for the next customer and
+   no one's info is left on screen.
+═══════════════════════════════════════════════════════ */
+
+const IDLE_TIMEOUT_MS = 90 * 1000;
+let idleTimer = null;
+
+function resetIdleTimer() {
+    clearTimeout(idleTimer);
+    if (document.getElementById('screen-welcome').classList.contains('active')) return;
+    idleTimer = setTimeout(() => {
+        resetCheckinState();
+        showScreen('screen-welcome');
+    }, IDLE_TIMEOUT_MS);
+}
+
+['touchstart', 'mousedown', 'keydown'].forEach(evt => {
+    document.addEventListener(evt, resetIdleTimer, { passive: true });
+});
+
+/* ═══════════════════════════════════════════════════════
+   CLOCK
+═══════════════════════════════════════════════════════ */
+
+function tickClock() {
+    const el = document.getElementById('welcome-clock');
+    if (el) el.textContent = new Date().toLocaleString([], { weekday: 'long', hour: '2-digit', minute: '2-digit' });
+}
+setInterval(tickClock, 1000);
+tickClock();
+
+/* ═══════════════════════════════════════════════════════
+   STORAGE HELPERS
+   Shares the same 'quoteRequests' key as customer_dashboard.html
+   so every walk-in shows up in Today's Queue immediately.
+═══════════════════════════════════════════════════════ */
+
+const REQUESTS_KEY   = 'quoteRequests';
+const CUSTOMERS_KEY  = 'customers';
+const APPTS_KEY       = 'appointments';
+
+function readJSON(key, fallback) {
+    try {
+        const raw = localStorage.getItem(key);
+        const parsed = raw ? JSON.parse(raw) : fallback;
+        return parsed;
+    } catch {
+        return fallback;
+    }
+}
+
+function writeJSON(key, value) {
+    try {
+        localStorage.setItem(key, JSON.stringify(value));
+    } catch (e) {
+        console.error('Storage write failed for', key, e);
+    }
+}
+
+function normalizePhone(phone) {
+    return (phone || '').replace(/\D/g, '');
+}
+
+function getCustomers() { return readJSON(CUSTOMERS_KEY, []); }
+function saveCustomersList(list) { writeJSON(CUSTOMERS_KEY, list); }
+
+function getRequests() { return readJSON(REQUESTS_KEY, []); }
+function saveRequests(list) { writeJSON(REQUESTS_KEY, list); }
+
+function getAppointments() {
+    let appts = readJSON(APPTS_KEY, null);
+    if (!appts) {
+        appts = getSampleAppointments();
+        writeJSON(APPTS_KEY, appts);
+    }
+    return appts;
+}
+
+// Demo data so "Check Appointment" has something to find during testing.
+// Safe to delete this function once real appointments are being created
+// by a future Appointments module.
+function getSampleAppointments() {
+    const inDays = n => {
+        const d = new Date();
+        d.setDate(d.getDate() + n);
+        return d.toISOString().split('T')[0];
+    };
+    return [
+        { id: 'appt_demo_1', name: 'Gabriel Torres', phone: '2567016388', date: inDays(3), time: 'Afternoon', service: 'Full Vehicle Tint', notes: '' },
+        { id: 'appt_demo_2', name: 'Maria Sanchez',  phone: '2564449201', date: inDays(1), time: 'Morning',   service: 'Paint Protection Film (PPF)', notes: '' }
+    ];
+}
+
+/* ═══════════════════════════════════════════════════════
+   VEHICLE YEAR / MAKE / MODEL
+═══════════════════════════════════════════════════════ */
+
+const popularVehicles = {
+    'Ford': ['F-150', 'Maverick', 'Explorer', 'Escape', 'Mustang', 'Bronco'],
+    'Chevrolet': ['Silverado 1500', 'Equinox', 'Tahoe', 'Traverse', 'Camaro', 'Malibu'],
+    'GMC': ['Sierra 1500', 'Acadia', 'Yukon', 'Terrain'],
+    'Ram': ['1500', '2500', '3500'],
+    'Jeep': ['Wrangler', 'Grand Cherokee', 'Compass', 'Cherokee'],
+    'Dodge': ['Charger', 'Challenger', 'Durango', 'Hornet'],
+    'Cadillac': ['Escalade', 'XT5', 'XT4', 'CT5'],
+    'Buick': ['Enclave', 'Encore GX', 'Envision'],
+    'Chrysler': ['Pacifica', '300'],
+    'Tesla': ['Model 3', 'Model Y', 'Model S', 'Model X', 'Cybertruck'],
+    'Toyota': ['Camry', 'Corolla', 'RAV4', 'Tacoma', 'Tundra', 'Highlander'],
+    'Honda': ['Civic', 'Accord', 'CR-V', 'Pilot', 'Ridgeline'],
+    'Nissan': ['Altima', 'Rogue', 'Sentra', 'Titan'],
+    'BMW': ['3 Series', '4 Series', '5 Series', 'X3', 'X5', '2 Series'],
+    'Mercedes-Benz': ['C-Class', 'E-Class', 'GLC', 'GLE', 'Sprinter'],
+    'Audi': ['A3', 'A4', 'A6', 'Q5', 'Q7'],
+    'Volkswagen': ['Jetta', 'Golf GTI', 'Tiguan', 'Atlas'],
+    'Volvo': ['XC40', 'XC60', 'XC90'],
+    'Porsche': ['Macan', 'Cayenne', '911'],
+    'MINI': ['Cooper', 'Countryman'],
+    'Land Rover': ['Range Rover', 'Defender', 'Discovery'],
+    'Jaguar': ['F-PACE', 'XE', 'XF']
+};
+
+function populateMakeSelect() {
+    const sel = document.getElementById('ci-make');
+    sel.innerHTML = '<option value="" selected>Select make…</option>';
+    Object.keys(popularVehicles).sort().forEach(make => {
+        const opt = document.createElement('option');
+        opt.value = make; opt.textContent = make;
+        sel.appendChild(opt);
+    });
+}
+
+function populateModelSelect(make) {
+    const sel = document.getElementById('ci-model');
+    const models = popularVehicles[make] || [];
+    sel.innerHTML = '';
+    const placeholder = document.createElement('option');
+    placeholder.value = ''; placeholder.selected = true;
+    placeholder.textContent = make ? 'Select a model…' : 'Select a make first…';
+    sel.appendChild(placeholder);
+    sel.disabled = !models.length;
+    models.forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m; opt.textContent = m;
+        sel.appendChild(opt);
+    });
+}
+
+function populateYearSelect() {
+    const sel = document.getElementById('ci-year');
+    sel.innerHTML = '';
+    const currentYear = new Date().getFullYear();
+    const placeholder = document.createElement('option');
+    placeholder.value = ''; placeholder.selected = true;
+    placeholder.textContent = 'Select year…';
+    sel.appendChild(placeholder);
+    for (let y = currentYear; y >= 1985; y--) {
+        const opt = document.createElement('option');
+        opt.value = String(y); opt.textContent = String(y);
+        sel.appendChild(opt);
+    }
+}
+
+document.getElementById('ci-make').addEventListener('change', e => populateModelSelect(e.target.value));
+populateMakeSelect();
+populateYearSelect();
+
+/* ═══════════════════════════════════════════════════════
+   PHOTO UPLOAD (camera or file — same pattern as main.html)
+═══════════════════════════════════════════════════════ */
+
+const ciPhotoCameraBtn = document.getElementById('ci-photo-camera-btn');
+const ciPhotoFileBtn   = document.getElementById('ci-photo-file-btn');
+const ciPhotoCamera    = document.getElementById('ci-photo-camera');
+const ciPhotoFile      = document.getElementById('ci-photo-file');
+const ciPhotoStatus    = document.getElementById('ci-photo-status');
+
+function updatePhotoStatus() {
+    const file = (ciPhotoCamera.files && ciPhotoCamera.files[0]) || (ciPhotoFile.files && ciPhotoFile.files[0]);
+    ciPhotoStatus.textContent = file ? `Selected: ${file.name}` : 'No photo selected.';
+}
+
+ciPhotoCameraBtn.addEventListener('click', () => ciPhotoCamera.click());
+ciPhotoFileBtn.addEventListener('click', () => ciPhotoFile.click());
+ciPhotoCamera.addEventListener('change', () => { ciPhotoFile.value = ''; updatePhotoStatus(); });
+ciPhotoFile.addEventListener('change', () => { ciPhotoCamera.value = ''; updatePhotoStatus(); });
+
+/* ═══════════════════════════════════════════════════════
+   CHECK-IN STATE (shared by New + Returning flows)
+═══════════════════════════════════════════════════════ */
+
+let checkinMode = 'new';       // 'new' | 'returning'
+let matchedCustomer = null;    // populated when a returning customer is found
+let selectedVehicle = null;    // { year, make, model } chosen from history, or null = "add new"
+
+function resetCheckinState() {
+    checkinMode = 'new';
+    matchedCustomer = null;
+    selectedVehicle = null;
+    document.getElementById('ci-name').value = '';
+    document.getElementById('ci-phone').value = '';
+    document.getElementById('ci-email').value = '';
+    document.getElementById('ci-year').value = '';
+    document.getElementById('ci-make').value = '';
+    populateModelSelect('');
+    document.querySelectorAll('#ci-services input[type="checkbox"]').forEach(cb => cb.checked = false);
+    document.getElementById('ci-time').value = 'Walk-in / As soon as possible';
+    document.getElementById('ci-notes').value = '';
+    ciPhotoCamera.value = ''; ciPhotoFile.value = '';
+    updatePhotoStatus();
+    document.getElementById('lookup-phone').value = '';
+    document.getElementById('appt-phone').value = '';
+}
+
+/* ── New Customer entry point ── */
+document.getElementById('btn-new-customer').addEventListener('click', () => {
+    resetCheckinState();
+    checkinMode = 'new';
+    document.getElementById('checkin-eyebrow').textContent = 'New Customer';
+    document.getElementById('checkin-identity-fields').style.display = '';
+    showScreen('screen-checkin-form');
+});
+
+/* ── Returning Customer entry point ── */
+document.getElementById('btn-returning-customer').addEventListener('click', () => {
+    resetCheckinState();
+    showScreen('screen-phone-lookup');
+    document.getElementById('lookup-phone').focus();
+});
+
+document.getElementById('btn-lookup-submit').addEventListener('click', () => {
+    const phone = normalizePhone(document.getElementById('lookup-phone').value);
+    if (!phone) return;
+
+    const customers = getCustomers();
+    const found = customers.find(c => normalizePhone(c.phone) === phone);
+
+    const banner = document.getElementById('returning-result-banner');
+    const picker = document.getElementById('returning-vehicle-picker');
+    const continueBtn = document.getElementById('btn-returning-continue');
+    const asNewBtn = document.getElementById('btn-returning-as-new');
+    picker.innerHTML = '';
+
+    if (found) {
+        matchedCustomer = found;
+        document.getElementById('returning-result-title').textContent = `Welcome Back, ${found.name.split(' ')[0]}!`;
+        banner.innerHTML = `<div class="welcome-back-banner">✓ We found your previous vehicle and service history. Pick a vehicle below, or add a new one.</div>`;
+
+        const vehicles = Array.isArray(found.vehicles) ? found.vehicles : [];
+        const grid = document.createElement('div');
+        grid.className = 'vehicle-pick-grid';
+
+        vehicles.forEach((v, idx) => {
+            const card = document.createElement('div');
+            card.className = 'vehicle-pick-card';
+            card.textContent = `${v.year} ${v.make} ${v.model}`;
+            card.dataset.idx = idx;
+            card.addEventListener('click', () => {
+                grid.querySelectorAll('.vehicle-pick-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                selectedVehicle = v;
+            });
+            grid.appendChild(card);
+        });
+
+        const addNewCard = document.createElement('div');
+        addNewCard.className = 'vehicle-pick-card';
+        addNewCard.textContent = '+ Add a New Vehicle';
+        addNewCard.addEventListener('click', () => {
+            grid.querySelectorAll('.vehicle-pick-card').forEach(c => c.classList.remove('selected'));
+            addNewCard.classList.add('selected');
+            selectedVehicle = null;
+        });
+        grid.appendChild(addNewCard);
+
+        picker.appendChild(grid);
+        continueBtn.style.display = '';
+        asNewBtn.style.display = 'none';
+    } else {
+        matchedCustomer = null;
+        document.getElementById('returning-result-title').textContent = "We Couldn't Find You";
+        banner.innerHTML = `<div class="not-found-banner">We don't see an account under that number yet — no problem, let's get you checked in as a new customer.</div>`;
+        continueBtn.style.display = 'none';
+        asNewBtn.style.display = '';
+        asNewBtn.dataset.phone = document.getElementById('lookup-phone').value;
+    }
+
+    showScreen('screen-returning-result');
+});
+
+document.getElementById('btn-returning-continue').addEventListener('click', () => {
+    checkinMode = 'returning';
+    document.getElementById('checkin-eyebrow').textContent = `Returning Customer — ${matchedCustomer.name}`;
+    document.getElementById('checkin-identity-fields').style.display = 'none';
+
+    if (selectedVehicle) {
+        document.getElementById('ci-year').value = selectedVehicle.year || '';
+        document.getElementById('ci-make').value = selectedVehicle.make || '';
+        populateModelSelect(selectedVehicle.make || '');
+        document.getElementById('ci-model').value = selectedVehicle.model || '';
+    } else {
+        document.getElementById('ci-year').value = '';
+        document.getElementById('ci-make').value = '';
+        populateModelSelect('');
+    }
+
+    showScreen('screen-checkin-form');
+});
+
+document.getElementById('btn-returning-as-new').addEventListener('click', () => {
+    checkinMode = 'new';
+    document.getElementById('checkin-eyebrow').textContent = 'New Customer';
+    document.getElementById('checkin-identity-fields').style.display = '';
+    document.getElementById('ci-phone').value = document.getElementById('btn-returning-as-new').dataset.phone || '';
+    showScreen('screen-checkin-form');
+});
+
+/* ═══════════════════════════════════════════════════════
+   SUBMIT CHECK-IN → creates/updates customer + queue entry
+═══════════════════════════════════════════════════════ */
+
+document.getElementById('btn-checkin-submit').addEventListener('click', () => {
+    const services = Array.from(document.querySelectorAll('#ci-services input:checked')).map(cb => cb.value);
+    const year = document.getElementById('ci-year').value;
+    const make = document.getElementById('ci-make').value;
+    const model = document.getElementById('ci-model').value;
+    const time = document.getElementById('ci-time').value;
+    const notes = document.getElementById('ci-notes').value.trim();
+    const photoFile = (ciPhotoCamera.files && ciPhotoCamera.files[0]) || (ciPhotoFile.files && ciPhotoFile.files[0]);
+
+    let name, phone, email, customerId;
+
+    if (checkinMode === 'new') {
+        name  = document.getElementById('ci-name').value.trim();
+        phone = document.getElementById('ci-phone').value.trim();
+        email = document.getElementById('ci-email').value.trim();
+
+        if (!name || !normalizePhone(phone)) {
+            alert('Please enter your name and mobile number.');
+            return;
+        }
+
+        customerId = upsertCustomer({ name, phone, email, year, make, model });
+    } else {
+        name  = matchedCustomer.name;
+        phone = matchedCustomer.phone;
+        email = matchedCustomer.email || '';
+        customerId = upsertCustomer({ name, phone, email, year, make, model, existingId: matchedCustomer.id });
+    }
+
+    const requests = getRequests();
+    requests.unshift({
+        id: 'walkin_' + Date.now(),
+        customerId,
+        name, phone, email,
+        year, make, model,
+        service: services.length ? services.join(', ') : 'Not specified',
+        addons: [],
+        preferred_date: '',
+        notes: `Preferred time: ${time}.${notes ? ' ' + notes : ''}`,
+        vehicle_photo_name: photoFile ? photoFile.name : '',
+        submissionDate: new Date().toISOString(),
+        status: 'new',
+        source: 'walk-in',
+        queueStatus: 'waiting'
+    });
+    saveRequests(requests);
+
+    showScreen('screen-confirm');
+
+    // Auto-return to Welcome a little after the confirmation, so the
+    // iPad is ready for the next walk-in without staff intervention.
+    setTimeout(() => {
+        if (document.getElementById('screen-confirm').classList.contains('active')) {
+            resetCheckinState();
+            showScreen('screen-welcome');
+        }
+    }, 8000);
+});
+
+function upsertCustomer({ name, phone, email, year, make, model, existingId }) {
+    const customers = getCustomers();
+    let record = existingId ? customers.find(c => c.id === existingId) : null;
+    if (!record) record = customers.find(c => normalizePhone(c.phone) === normalizePhone(phone));
+
+    const hasVehicle = year && make && model;
+
+    if (record) {
+        record.name = name || record.name;
+        record.email = email || record.email;
+        if (hasVehicle) {
+            record.vehicles = Array.isArray(record.vehicles) ? record.vehicles : [];
+            const exists = record.vehicles.some(v => v.year === year && v.make === make && v.model === model);
+            if (!exists) record.vehicles.push({ year, make, model });
+        }
+        record.lastVisit = new Date().toISOString();
+    } else {
+        record = {
+            id: 'cust_' + Date.now(),
+            name, phone, email,
+            vehicles: hasVehicle ? [{ year, make, model }] : [],
+            createdAt: new Date().toISOString(),
+            lastVisit: new Date().toISOString()
+        };
+        customers.push(record);
+    }
+
+    saveCustomersList(customers);
+    return record.id;
+}
+
+/* ═══════════════════════════════════════════════════════
+   CHECK APPOINTMENT
+═══════════════════════════════════════════════════════ */
+
+document.getElementById('btn-check-appointment').addEventListener('click', () => {
+    document.getElementById('appt-phone').value = '';
+    showScreen('screen-appt-lookup');
+    document.getElementById('appt-phone').focus();
+});
+
+document.getElementById('btn-appt-submit').addEventListener('click', () => {
+    const phone = normalizePhone(document.getElementById('appt-phone').value);
+    const list = document.getElementById('appt-result-list');
+    list.innerHTML = '';
+
+    const matches = getAppointments().filter(a => normalizePhone(a.phone) === phone);
+
+    if (!phone || matches.length === 0) {
+        list.innerHTML = '<div class="not-found-banner">No upcoming appointment found for that number — please see the front desk and we\'ll get you sorted out.</div>';
+    } else {
+        matches
+            .sort((a, b) => new Date(a.date) - new Date(b.date))
+            .forEach(a => {
+                const card = document.createElement('div');
+                card.className = 'appt-card';
+                const dateLabel = new Date(a.date + 'T00:00:00').toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
+                card.innerHTML = `
+                    <div class="appt-date">${dateLabel} — ${escHtml(a.time)}</div>
+                    <div class="appt-meta">${escHtml(a.service)}</div>
+                    ${a.notes ? `<div class="appt-meta">${escHtml(a.notes)}</div>` : ''}
+                `;
+                list.appendChild(card);
+            });
+    }
+
+    showScreen('screen-appt-result');
+});
+
+function escHtml(str) {
+    if (str == null) return '';
+    return String(str)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#x27;');
+}
+
+/* ── Init ── */
+resetIdleTimer();
+</script>
+</body>
+</html>
