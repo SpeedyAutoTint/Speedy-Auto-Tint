@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Speedy Auto Tint | Employee Pricing Reference</title>
+<link rel="icon" type="image/png" href="../favicon.png" sizes="64x64">
+<link rel="stylesheet" href="css/tron.css">
+<link rel="stylesheet" href="css/print.css" media="print">
+<script defer src="../pricing-data/pricing-service.js"></script>
+<script defer src="pricing-render.js"></script>
+<script defer src="js/pricing.js"></script>
+</head>
+<body>
+
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-text">Loading pricing data…</div>
+</div>
+
+<header class="topbar">
+    <div class="topbar-inner">
+        <a href="../customer_dashboard.html" class="logoArea">
+            <img src="Speedy-Auto-Tint-main\images\Main.png" alt="Speedy Auto Tint" onerror="this.style.display='none'">
+            <div>
+                <h1>Speedy Auto Tint</h1>
+                <p>Employee Pricing Reference</p>
+            </div>
+        </a>
+
+        <nav>
+            <div class="nav-links" id="sectionNav"></div>
+            <button id="printButton" type="button">Print</button>
+            <a id="dashboardLink" class="btn-ghost-link" href="../customer_dashboard.html">Dashboard</a>
+            <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
+            <div class="mobile-menu" id="mobile-menu" role="navigation" aria-label="Section navigation">
+                <ul id="mobileSectionNav"></ul>
+                <div class="menu-divider"></div>
+                <ul>
+                    <li><a href="../customer_dashboard.html">← Back to Dashboard</a></li>
+                    <li><button type="button" onclick="window.print()">Print Sheet</button></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+</header>
+
+<section class="hero">
+    <h2>Pricing Center</h2>
+    <p>Quick employee reference for quoting customers. Always verify pricing before collecting deposits.</p>
+    <div class="searchContainer">
+        <input id="search" type="text" placeholder="Search services…" autocomplete="off">
+    </div>
+</section>
+
+<main id="pricingContent"></main>
+
+<section class="notes-section category" id="notes">
+    <div class="sectionTitle"><h2>Employee Notes</h2></div>
+    <div class="notes-panel">
+        <h3>Reminders &amp; Guidelines</h3>
+        <ul class="notes-list" id="notesList"></ul>
+        <form class="add-note-form" onsubmit="return false;">
+            <input id="newNoteInput" type="text" placeholder="Add a new note…" maxlength="300" aria-label="New note">
+            <button id="addNoteBtn" type="button">Add Note</button>
+        </form>
+    </div>
+</section>
+
+<footer>
+    <div>Speedy Auto Tint Employee Dashboard</div>
+    <div>Pricing Center v2.0 · To edit all prices across all files, make edits in the pricing.json file</div>
+</footer>
+
+</body>
+</html>
